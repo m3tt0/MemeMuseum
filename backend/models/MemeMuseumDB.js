@@ -49,13 +49,8 @@ Vote.Meme = Vote.belongsTo(Meme, {foreignKey: {name: "memeId", allowNull: false}
 Meme.Votes = Meme.hasMany(Vote, {foreignKey: {name: "memeId", allowNull: false}});
 
 
-//sincronizzazione schema
-database.sync()
-  .then( () => {
-    console.log("database sincronizzato correttamente !");
-}).catch( err => {
-    console.error("errore durante la sincronizzazione del database: " + err.message);
-})
+//sincronizzazione dello schema demandata
+//all'entrypoint del programma
 
 
 
