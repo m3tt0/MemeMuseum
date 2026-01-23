@@ -3,7 +3,7 @@ import { httpErrorHandler } from "../utils/httpUtils.js";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-export class AuthController{
+export class authController{
     //Gestione delle richieste su /auth e controllo delle credenziali
 
     static async login (userBody){
@@ -50,6 +50,10 @@ export class AuthController{
         process.env.TOKEN_SECRET, {expiresIn: '24h'});
     }
 
+    static async canUserModifyMeme(userId, memeId){
+        const meme = await Meme.findByPk(memeId);
+        return meme && meme.userId === userId;
+    }
 
 
 

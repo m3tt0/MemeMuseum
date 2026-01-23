@@ -1,4 +1,4 @@
-import { httpErrorHandler } from "../utils/httpUtils";
+import { httpErrorHandler } from "./httpUtils";
 
 export async function checkNonEmptyBodyFields(req, res, next) {
   console.log(req.headers);

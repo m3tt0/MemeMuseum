@@ -1,8 +1,8 @@
-import Jwt from "jsonwebtoken";
 import { httpErrorHandler } from "../utils/httpUtils.js";
+import { authController } from "../controllers/authController.js";
 
 export function enforceAuthentication(req, res, next) {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers['authorization'];
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return next(httpErrorHandler(401, "Missing or invalid Authorization header"));
@@ -10,16 +10,25 @@ export function enforceAuthentication(req, res, next) {
 
   const token = authHeader.split(" ")[1];
 
-  try {
-    const payload = Jwt.verify(token, process.env.TOKEN_SECRET);
+  authController.isTokenValid(token, (err, decodedToken) => {
+    if (err) {
+      next(httpErrorHandler(401, "Unauthorized"));
+    } else {
+      req.userId = decodedToken.sub;
+      req.userName = decodedToken.userName;
+      next();
+    }
+  });
+}
 
-    req.user = {
-      userId: payload.sub,
-      userName: payload.userName
-    };
+export async function ensureUsersModifyOnlyOwnMemes(req, res, next) {
+  const userId = req.userId;
+  const memeId = req.params.memeId;
+  const isAuthorized = await authController.canUserModifyMeme(userId, memeId);
 
+  if (isAuthorized) {
     next();
-  } catch (err) {
-    next(httpErrorHandler(401, "Invalid or expired token"));
+  } else {
+    next(httpErrorHandler(403, "Forbidden! You do not have permissions to view or modify this resource"));
   }
 }

@@ -7,7 +7,7 @@ export function createModel(database){
             primaryKey: true,
             autoIncrement: true
         },
-        name: {
+        content: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
