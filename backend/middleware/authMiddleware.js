@@ -32,3 +32,15 @@ export async function ensureUsersModifyOnlyOwnMemes(req, res, next) {
     next(httpErrorHandler(403, "Forbidden! You do not have permissions to view or modify this resource"));
   }
 }
+
+export async function ensureUserModifyOnlyOwnComments(req, res, next) {
+  const userId = req.userId;
+  const commentId = req.params.commentId;
+  const isAuthorized = await authController.canUserModifyComment(userId, commentId);
+
+  if (isAuthorized) {
+    next();
+  } else {
+    next(httpErrorHandler(403, "Forbidden! You do not have permissions to view or modify this resource"));
+  }
+}

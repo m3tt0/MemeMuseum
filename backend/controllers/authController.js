@@ -55,6 +55,10 @@ export class authController{
         return meme && meme.userId === userId;
     }
 
+    static async canUserModifyComment(userId, commentId){
+        const comment = await Comment.findByPk(commentId);
+        return comment && comment.userId === userId;
+    }
 
 
 
