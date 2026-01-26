@@ -61,7 +61,11 @@ export class commentController {
             where: { memeId },
             order: [["creationDate", "DESC"]],
             limit: pageSize,
-            offset
+            offset,
+            include: [{
+                model: User,
+                attributes: ["userName"]
+            }]
         });
 
         return {

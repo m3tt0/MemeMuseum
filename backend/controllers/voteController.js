@@ -5,7 +5,12 @@ export class voteController {
     //Gestione delle richieste su /votes
 
     static async newVote(voteBody, userId, memeId){
-        const existingVote = await this.getVoteById(voteBody.voteId);
+        const existingVote = await Vote.findOne({
+            where: {
+                userId: userId,
+                memeId: memeId
+            }
+        });
         
         if (existingVote) {
             throw httpErrorHandler(409, "You have already voted for this meme.");
@@ -38,11 +43,26 @@ export class voteController {
     }
 
     static async getVotesByMeme(memeId){
-        return Vote.findAll({
-            where: {
-                memeId: memeId
-            }
+        const results = await Vote.findAll({
+            where: { memeId },
+            attributes: [
+                [sequelize.fn("COUNT", sequelize.col("voteId")), "total"],
+                [
+                    sequelize.fn("SUM",
+                        sequelize.literal("CASE WHEN voteType = 1 THEN 1 ELSE 0 END")
+                    ),
+                    "upvotes"
+                ],
+                [
+                    sequelize.fn("SUM",
+                        sequelize.literal("CASE WHEN voteType = -1 THEN 1 ELSE 0 END")
+                    ),
+                    "downvotes"
+                ]
+            ]
         });
+
+        return results[0].dataValues;
     }
 
 

@@ -11,7 +11,7 @@ const PORT = 3030;
 
 //app.use(morgan('dev'));
 app.use(cors());
-//app.use(express.static("public"));
+app.use(express.static("uploads")); //file statici dalla cartella uploads
 app.use(express.json());
 app.use(emptyBodyMiddleware);
 app.use(enforceAuthentication);
@@ -22,10 +22,13 @@ app.use(enforceAuthentication);
 //Routes //(inserire qui gli import e le definizioni delle rotte)
 
 app.use("/api/auth", authRouter);
+app.use(userRouter);
 
 
 
 
+
+//error handler generale
 app.use((err, req, res, next) => {
   console.log(err.stack);
   res.status(err.status || 500).json({

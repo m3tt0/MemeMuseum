@@ -60,9 +60,15 @@ export class authController{
         return comment && comment.userId === userId;
     }
 
+    static async canUserModifyVote(userId, voteId){
+        const vote = await Vote.findByPk(voteId);
+        return vote && vote.userId === userId;
+    }
 
-
-
+    static async canUserModifyProfile(userId){
+        const user = await User.findByPk(userId);
+        return user && user.userId === userId;
+    }
 
 
 

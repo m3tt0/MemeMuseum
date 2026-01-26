@@ -8,7 +8,7 @@ export const memeRouter = new express.Router();
 
 
 //creazione di un nuovo meme
-memeRouter.post("/", (req, res, next) => {
+memeRouter.post("/memes", (req, res, next) => {
     memeController.newMeme(req.body, req.userId)
     .then( result => {
         res.json(result);
@@ -19,7 +19,7 @@ memeRouter.post("/", (req, res, next) => {
 });
 
 //eliminazione di un meme esistente
-memeRouter.delete("/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
+memeRouter.delete("/memes/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
     memeController.deleteMeme(req.params.memeId)
     .then( result => {
         res.json(result);
@@ -30,7 +30,7 @@ memeRouter.delete("/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (r
 });
 
 //aggiornamento di un meme esistente
-memeRouter.put("/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
+memeRouter.put("/memes/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
     memeController.updateMeme(req.params.memeId, req.body)
     .then( result => {
         res.json(result);
@@ -41,7 +41,7 @@ memeRouter.put("/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req,
 });
 
 
-memeRouter.get("/search", (req, res, next) => {
+memeRouter.get("/memes/search", (req, res, next) => {
     memeController.searchMemes(req.query)
     .then( result => {
         res.json(result);
@@ -51,7 +51,7 @@ memeRouter.get("/search", (req, res, next) => {
     });
 });
 
-memeRouter.get("/daily", (req, res, next) => {
+memeRouter.get("/memes/daily", (req, res, next) => {
     memeController.getDailyMemes()
     .then( result => {
         res.json(result);
