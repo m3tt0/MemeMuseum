@@ -25,3 +25,23 @@ commentRouter.delete("/comments/:commentId", ensureCommentExists, ensureUserModi
         next(err);
     });
 });
+
+commentRouter.put("/comments/:commentId", ensureCommentExists, ensureUserModifyOnlyOwnComments, (req, res, next) => {
+    commentController.updateComment(req.params.commentId, req.body)
+    .then( result => {
+        res.json(result);
+    })
+    .catch( err => {
+        next(err);
+    });
+});
+
+commentRouter.get("/memes/:memeId/comments", ensureMemeExists, (req, res, next) => {
+    commentController.getCommentsByMeme(req.params.memeId)
+    .then( result => {
+        res.json(result);
+    })
+    .catch( err => {
+        next(err);
+    });
+});

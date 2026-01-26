@@ -7,7 +7,7 @@ export class commentController {
 
     static async newComment(commentBody, userId, memeId){
         return Comment.create({
-            ...commentBody,
+            content: commentBody.content,
             userId: userId,
             memeId: memeId
         });
@@ -40,18 +40,37 @@ export class commentController {
         return Comment.findByPk(commentId);    
     }
 
-    static async getCommentsByMeme(memeId){
+    // Paginated fetch of comments for a meme
+    // page = 1-based page number, pageSize = items per page (default 10, max 100)
+    static async getCommentsByMeme(memeId, page = 1, pageSize = 10){
         const meme = await Meme.findByPk(memeId);
         if (!meme) {
             throw httpErrorHandler(404, "Meme not found");
         }
-        
-        return Comment.findAll({
-            where: {
-                memeId: memeId
-            },
-            order: [["creationDate", "DESC"]]
+
+        page = parseInt(page, 10) || 1;
+        pageSize = parseInt(pageSize, 10) || 10;
+        if (page < 1 || pageSize < 1) {
+            throw httpErrorHandler(400, "Invalid pagination parameters");
+        }
+        if (pageSize > 100) pageSize = 100;
+
+        const offset = (page - 1) * pageSize;
+
+        const { count, rows } = await Comment.findAndCountAll({
+            where: { memeId },
+            order: [["creationDate", "DESC"]],
+            limit: pageSize,
+            offset
         });
+
+        return {
+            items: rows,
+            total: count,
+            page,
+            pageSize,
+            totalPages: Math.ceil(count / pageSize)
+        };
     }
 
 

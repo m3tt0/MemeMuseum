@@ -6,7 +6,8 @@ export class memeController{
 
     static async newMeme(memeBody, userId){
         return Meme.create({
-            ...memeBody,
+            caption: memeBody.caption,
+            imagePath: memeBody.imagePath,
             userId: userId
         });
     }
