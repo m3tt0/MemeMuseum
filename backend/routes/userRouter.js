@@ -4,9 +4,10 @@ import { ensureUserModifyOnlyOwnProfile } from "../middleware/authMiddleware.js"
 import { uploadProfile } from "../middleware/uploadMiddleware.js";
 
 
+
 export const userRouter = new express.Router();
 
-userRouter.get('/users/:userId', (req, res, next) => {
+userRouter.get("/users/:userId", (req, res, next) => {
     userController.getUserById(req.params.userId)
     .then( result => {
         res.json(result);
@@ -57,3 +58,5 @@ userRouter.put("/users/:userId/profilePicture", ensureUserModifyOnlyOwnProfile, 
         next(err);
     });
 });
+
+

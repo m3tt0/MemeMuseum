@@ -1,4 +1,4 @@
-import { User } from "../models/MemeMuseumDB.js";
+import { User, Vote, Comment, Meme} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
@@ -50,6 +50,10 @@ export class authController{
         process.env.TOKEN_SECRET, {expiresIn: '24h'});
     }
 
+    static isTokenValid(token, callback) {
+        Jwt.verify(token, process.env.TOKEN_SECRET, callback);
+    }
+
     static async canUserModifyMeme(userId, memeId){
         const meme = await Meme.findByPk(memeId);
         return meme && meme.userId === userId;
@@ -65,9 +69,9 @@ export class authController{
         return vote && vote.userId === userId;
     }
 
-    static async canUserModifyProfile(userId){
+    static async canUserModifyProfile(userId, loggedUserId){
         const user = await User.findByPk(userId);
-        return user && user.userId === userId;
+        return user && user.userId === loggedUserId;
     }
 
 

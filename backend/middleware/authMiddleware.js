@@ -1,8 +1,9 @@
 import { httpErrorHandler } from "../utils/httpUtils.js";
 import { authController } from "../controllers/authController.js";
+import { userController } from "../controllers/userController.js";
 
 export function enforceAuthentication(req, res, next) {
-  const authHeader = req.headers['authorization'];
+  const authHeader = req.headers["authorization"];
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return next(httpErrorHandler(401, "Missing or invalid Authorization header"));
@@ -10,13 +11,17 @@ export function enforceAuthentication(req, res, next) {
 
   const token = authHeader.split(" ")[1];
 
-  authController.isTokenValid(token, (err, decodedToken) => {
+  authController.isTokenValid(token, async (err, decodedToken) => {
     if (err) {
       next(httpErrorHandler(401, "Unauthorized"));
     } else {
-      req.userId = decodedToken.sub;
-      req.userName = decodedToken.userName;
-      next();
+        const user = await userController.getUserById(decodedToken.sub);
+          if (!user) {
+            next(httpErrorHandler(401, "Unauthorized"));
+          }
+        req.userId = decodedToken.sub;
+        req.userName = decodedToken.userName;
+        next();
     }
   });
 }
@@ -58,8 +63,9 @@ export async function ensureUserModifyOnlyOwnVotes(req, res, next) {
 }
 
 export async function ensureUserModifyOnlyOwnProfile(req, res, next) {
-  const userId = req.userId;
-  const isAuthorized = await authController.canUserModifyProfile(userId);
+  const userId = req.params.userId;
+  const loggedUserId = req.userId;
+  const isAuthorized = await authController.canUserModifyProfile(userId, loggedUserId);
 
   if (isAuthorized) {
     next();

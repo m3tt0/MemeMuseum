@@ -3,7 +3,7 @@ import { voteController } from "../controllers/voteController.js";
 import { ensureMemeExists } from "../middleware/memeMiddleware.js";
 import { ensureUserModifyOnlyOwnVotes } from "../middleware/authMiddleware.js";
 
-const voteRouter = express.Router();
+export const voteRouter = express.Router();
 
 voteRouter.post("/memes/:memeId/votes", ensureMemeExists, (req, res, next) => {
     voteController.newVote(req.body, req.userId, req.params.memeId)

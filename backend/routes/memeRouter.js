@@ -1,7 +1,7 @@
 import express from "express";
 import { memeController } from "../controllers/memeController.js";
 import { ensureUsersModifyOnlyOwnMemes } from "../middleware/authMiddleware.js";
-import { ensureMemeExist } from "../middleware/memeMiddleware.js";
+import { ensureMemeExists } from "../middleware/memeMiddleware.js";
 
 
 export const memeRouter = new express.Router();
@@ -19,7 +19,7 @@ memeRouter.post("/memes", (req, res, next) => {
 });
 
 //eliminazione di un meme esistente
-memeRouter.delete("/memes/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
+memeRouter.delete("/memes/:memeId", ensureMemeExists, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
     memeController.deleteMeme(req.params.memeId)
     .then( result => {
         res.json(result);
@@ -30,7 +30,7 @@ memeRouter.delete("/memes/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMem
 });
 
 //aggiornamento di un meme esistente
-memeRouter.put("/memes/:memeId", ensureMemeExist, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
+memeRouter.put("/memes/:memeId", ensureMemeExists, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
     memeController.updateMeme(req.params.memeId, req.body)
     .then( result => {
         res.json(result);

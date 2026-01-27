@@ -1,5 +1,5 @@
 import express from "express";
-import { commentController } from "../controllers/commentCotroller";
+import { commentController } from "../controllers/commentController.js";
 import { ensureCommentExists } from "../middleware/commentMiddleware.js";
 import { ensureMemeExists } from "../middleware/memeMiddleware.js";
 import { ensureUserModifyOnlyOwnComments } from "../middleware/authMiddleware.js";

@@ -1,4 +1,4 @@
-import { commentController } from "../controllers/commentCotroller";
+import { commentController } from "../controllers/commentController.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export async function ensureCommentExists(req, res, next) {

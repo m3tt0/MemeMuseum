@@ -6,8 +6,9 @@ import fs from "fs";
 export class userController {
 
     
-    static async getUserById(userId) {
-        return User.findByPk(userId);
+    static async getUserById(userId) { 
+        const user = User.findByPk(userId);
+        return user;
     }
 
     
@@ -65,7 +66,8 @@ export class userController {
             this.getUserById(userId).then( user => {
 
                 const oldPicture = user.profilePicture;
-                user.update({profilePicture: filePath}).then( () => {
+                const normalizedPath = filePath.replace(/\\/g, "/");
+                user.update({profilePicture: normalizedPath}).then( () => {
 
                     if (oldPicture){
                         fs.unlink(oldPicture, (err) => {

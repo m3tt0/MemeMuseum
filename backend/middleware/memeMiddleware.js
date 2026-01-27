@@ -1,4 +1,4 @@
-import { memeController } from "../controllers/memeController";
+import { memeController } from "../controllers/memeController.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export async function ensureMemeExists(req, res, next) {

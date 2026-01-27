@@ -1,5 +1,5 @@
 import { Meme, Tag, Vote } from "../models/MemeMuseumDB.js";
-import { Op, sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 export class memeController{
     //Gestione delle richieste su /memes
@@ -71,7 +71,7 @@ export class memeController{
                 attributes: []
             });
 
-            order = [[literal("SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)"), "DESC"]];
+            order = [[Sequelize.literal("SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)"), "DESC"]];
         }
 
         const offset = (page - 1) * limit;
@@ -102,11 +102,11 @@ export class memeController{
                 attributes: []
             }],
             attributes: {
-                include: [[sequelize.fn("SUM", sequelize.literal("CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END")), "upvotes"]]
+                include: [[Sequelize.fn("SUM", Sequelize.literal("CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END")), "upvotes"]]
             },
             subQuery: false,
             group: ["Meme.memeId"],
-            order: [[sequelize.literal("upvotes"), "DESC"]],
+            order: [[Sequelize.literal("upvotes"), "DESC"]],
             limit
         });
     }

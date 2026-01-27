@@ -1,5 +1,6 @@
-import { Vote } from '../models/models.js';
-import { httpErrorHandler } from '../utils/httpUtils.js';
+import { Vote } from "../models/MemeMuseumDB.js";
+import { Sequelize } from "sequelize";
+import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export class voteController {
     //Gestione delle richieste su /votes
@@ -46,16 +47,16 @@ export class voteController {
         const results = await Vote.findAll({
             where: { memeId },
             attributes: [
-                [sequelize.fn("COUNT", sequelize.col("voteId")), "total"],
+                [Sequelize.fn("COUNT", Sequelize.col("voteId")), "total"],
                 [
-                    sequelize.fn("SUM",
-                        sequelize.literal("CASE WHEN voteType = 1 THEN 1 ELSE 0 END")
+                    Sequelize.fn("SUM",
+                        Sequelize.literal("CASE WHEN voteType = 1 THEN 1 ELSE 0 END")
                     ),
                     "upvotes"
                 ],
                 [
-                    sequelize.fn("SUM",
-                        sequelize.literal("CASE WHEN voteType = -1 THEN 1 ELSE 0 END")
+                    Sequelize.fn("SUM",
+                        Sequelize.literal("CASE WHEN voteType = -1 THEN 1 ELSE 0 END")
                     ),
                     "downvotes"
                 ]

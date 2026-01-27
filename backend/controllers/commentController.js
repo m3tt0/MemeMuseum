@@ -1,5 +1,6 @@
-import { Comment, Meme} from "../models/MemeMuseumDB";
-import { httpErrorHandler } from "../utils/httpUtils";
+import { Comment, Meme, User} from "../models/MemeMuseumDB.js";
+import { httpErrorHandler } from "../utils/httpUtils.js";
+
 
 
 export class commentController {

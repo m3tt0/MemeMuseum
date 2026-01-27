@@ -1,4 +1,4 @@
-import { httpErrorHandler } from "./httpUtils";
+import { httpErrorHandler } from "./httpUtils.js";
 
 export async function checkNonEmptyBodyFields(req, res, next) {
   console.log(req.headers);
@@ -15,7 +15,7 @@ export async function checkNonEmptyBodyFields(req, res, next) {
       const sanitizedValue = body[key].trim();
 
       if (regex.test(sanitizedValue)) {
-        next(httpErrorHandler(400, `Field "${key}" cannot be empty or contain only special characters`));
+        next(httpErrorHandler(400, `Field ${key} cannot be empty or contain only special characters`));
         return;
       }
       body[key] = sanitizedValue;
