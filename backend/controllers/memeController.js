@@ -1,13 +1,15 @@
 import { Meme, Tag, Vote } from "../models/MemeMuseumDB.js";
 import { Op, Sequelize } from "sequelize";
+import path from "path";
+import fs from "fs/promises";
 
 export class memeController{
     //Gestione delle richieste su /memes
 
-    static async newMeme(memeBody, userId){
+    static async newMeme(memeBody, memePath, userId){
         return Meme.create({
             caption: memeBody.caption,
-            imagePath: memeBody.imagePath,
+            imagePath: memePath.replace(/\\/g, "/"),
             userId: userId
         });
     }
@@ -15,6 +17,9 @@ export class memeController{
     static async deleteMeme(memeId){
         return new Promise ((resolve, reject) => {
             this.getMemeById(memeId).then( meme => {
+                if (meme.imagePath){
+                    fs.unlink(path.resolve(meme.imagePath)).catch( err => {console.warn("Could not delete meme:", err.message);})
+                }
                 meme.destroy().then(() => {resolve(meme)})
             })
         });
@@ -23,7 +28,7 @@ export class memeController{
     static async updateMeme(memeId, updatedMemeBody){
         return new Promise ((resolve, reject) => {
             this.getMemeById(memeId).then( meme => {
-                meme.update(updatedMemeBody).then(() => {resolve(meme)})
+                meme.update(updatedMemeBody.caption).then(() => {resolve(meme)})
             })
         });
     }

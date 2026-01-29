@@ -1,7 +1,7 @@
 import express from "express";
 import { userController } from "../controllers/userController.js";
 import { ensureUserModifyOnlyOwnProfile } from "../middleware/authMiddleware.js";
-import { uploadProfile } from "../middleware/uploadMiddleware.js";
+import { uploadProfile } from "../middleware/uploadProfilePicture.js";
 
 
 

@@ -1,7 +1,8 @@
 import { User, Meme, Comment, Vote } from "../models/MemeMuseumDB.js";
 import bcrypt from "bcrypt";
 import { httpErrorHandler } from "../utils/httpUtils.js";
-import fs from "fs";
+import path from "path";
+import fs from "fs/promises";
 
 export class userController {
 
@@ -62,20 +63,16 @@ export class userController {
 
     
     static async updateProfilePicture(userId, filePath) {
-        return new Promise ( (resolve, reject) => {
-            this.getUserById(userId).then( user => {
+        const user = await User.findByPk(userId);
+        const oldPicture = user.profilePicture;
 
-                const oldPicture = user.profilePicture;
-                const normalizedPath = filePath.replace(/\\/g, "/");
-                user.update({profilePicture: normalizedPath}).then( () => {
+        if(oldPicture){      
+            await fs.unlink(path.resolve(oldPicture)).catch( err => {console.warn("Could not delete old profile image:", err.message); });
+        }
 
-                    if (oldPicture){
-                        fs.unlink(oldPicture, (err) => {
-                            if (err) console.warn("Could not delete old profile image:", err);
-                        });
-                    }
-                    resolve(user)})
-            })
-        });
+        const normalizedPath = filePath.replace(/\\/g, "/");
+        const userUpdated = await user.update({profilePicture: normalizedPath});
+
+        return userUpdated;
     }
 }

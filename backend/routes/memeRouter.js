@@ -2,14 +2,16 @@ import express from "express";
 import { memeController } from "../controllers/memeController.js";
 import { ensureUsersModifyOnlyOwnMemes } from "../middleware/authMiddleware.js";
 import { ensureMemeExists } from "../middleware/memeMiddleware.js";
-
+import { uploadMeme } from "../middleware/uploadMemePicture.js"
 
 export const memeRouter = new express.Router();
 
 
 //creazione di un nuovo meme
-memeRouter.post("/memes", (req, res, next) => {
-    memeController.newMeme(req.body, req.userId)
+memeRouter.post("/memes", uploadMeme.single("image"), (req, res, next) => {
+    const filePath = req.file ? req.file.path : null;
+
+    memeController.newMeme(req.body, filePath, req.userId)
     .then( result => {
         res.json(result);
     })

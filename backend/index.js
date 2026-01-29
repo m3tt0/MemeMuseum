@@ -12,7 +12,7 @@ import { voteRouter } from "./routes/voteRouter.js";
 import { commentRouter } from "./routes/commentRouter.js";
 
 const app = express();
-const PORT = 3030;
+const PORT = process.env.PORT;
 
 //app.use(morgan('dev'));
 app.use(cors());
@@ -50,7 +50,7 @@ async function main() {
   try {
     await database.authenticate(); //eventualmente utile per integrazioni di DB diversi
     await database.sync();   
-    app.listen(PORT, () => console.log("API up on :${PORT}"));
+    app.listen(PORT, () => console.log(`API up on :${PORT}`));
   } catch (err) {
     console.error("DB init failed:", err);
     process.exit(1);
