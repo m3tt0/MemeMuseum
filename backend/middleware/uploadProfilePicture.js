@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { httpErrorHandler } from "../utils/httpUtils.js";
 
 const uploadFolder = process.env.UPLOAD_PROFILE_DIR;
 
@@ -19,4 +20,15 @@ const storage = multer.diskStorage({
     }
 });
 
-export const uploadProfile = multer({ storage });
+const fileFilter = (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+        return cb(new Error("Only image files are allowed"));
+    }
+    cb(null, true);
+};
+
+export const uploadProfile = multer({ 
+    storage,
+    limits: {fileSize: process.env.MAX_SIZE_UPLOAD},
+    fileFilter
+});

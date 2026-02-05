@@ -1,13 +1,14 @@
 import express from "express";
 import { userController } from "../controllers/userController.js";
 import { ensureUserModifyOnlyOwnProfile } from "../middleware/authMiddleware.js";
+import { ensureUserExists } from "../middleware/userMiddleware.js";
 import { uploadProfile } from "../middleware/uploadProfilePicture.js";
 
 
 
 export const userRouter = new express.Router();
 
-userRouter.get("/users/:userId", (req, res, next) => {
+userRouter.get("/users/:userId", ensureUserExists, (req, res, next) => {
     userController.getUserById(req.params.userId)
     .then( result => {
         res.json(result);

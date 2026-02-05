@@ -31,13 +31,13 @@ export class voteController {
         });
     }
 
-    static async updateVote(updatedVoteBody, voteId){
-        return new Promise ( (resolve, reject) => {
-            this.getVoteById(voteId).then( vote => {
-                vote.update(updatedVoteBody).then( () => {resolve(vote)})
-            })
-        });
+    static async updateVote(updatedVoteBody, voteId) {
+        const vote = await this.getVoteById(voteId);
+        if (!vote) throw httpErrorHandler(404, "Vote not found");
+        else if (vote.voteType === updatedVoteBody.voteType) throw httpErrorHandler(500, "You have already voted with this vote type!")
+        return vote.update(updatedVoteBody);  
     }
+
 
     static async getVoteById(voteId){
         return Vote.findByPk(voteId);    

@@ -26,7 +26,7 @@ commentRouter.delete("/comments/:commentId", ensureCommentExists, ensureUserModi
     });
 });
 
-commentRouter.put("memes/comments/:commentId", ensureCommentExists, ensureUserModifyOnlyOwnComments, (req, res, next) => {
+commentRouter.put("/comments/:commentId", ensureCommentExists, ensureUserModifyOnlyOwnComments, (req, res, next) => {
     commentController.updateComment(req.params.commentId, req.body)
     .then( result => {
         res.json(result);

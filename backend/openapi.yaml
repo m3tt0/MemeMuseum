@@ -1,0 +1,555 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: MemeMuseum API
+  description: >
+    REST API for MemeMuseum, a social platform where users can upload memes,
+    comment, vote, and manage their own profiles.
+
+servers:
+  - url: http://localhost:3030
+
+tags:
+  - name: auth
+    description: User authentication and registration.
+  - name: user
+    description: User profile management.
+  - name: comment
+    description: Comments handling.
+  - name: vote
+    description: Voting system for memes.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        userId:
+          type: integer
+        userName:
+          type: string
+        profilePicture:
+          type: string
+          nullable: true
+        creationDate:
+          type: string
+          format: date-time
+
+    Comment:
+      type: object
+      properties:
+        commentId:
+          type: integer
+        content:
+          type: string
+        creationDate:
+          type: string
+          format: date-time
+        userId:
+          type: integer
+        memeId:
+          type: integer
+
+    Vote:
+      type: object
+      properties:
+        voteId:
+          type: integer
+        voteType:
+          type: integer
+          enum: [1, -1]
+        creationDate:
+          type: string
+          format: date-time
+        userId:
+          type: integer
+        memeId:
+          type: integer
+
+paths:
+
+  ###############################################
+  #                  AUTH                       #
+  ###############################################
+
+  /api/auth/signup:
+    post:
+      tags: [auth]
+      summary: Register a new user.
+      requestBody:
+        description: Credentials of the user to be registered.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [usr, pwd]
+              properties:
+                usr:
+                  type: string
+                  example: JohnDoe
+                pwd:
+                  type: string
+                  example: secretPassword
+      responses:
+        "201":
+          description: User created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                  userName:
+                    type: string
+        "409":
+          description: Username already exists.
+
+
+  /api/auth/login:
+    post:
+      tags: [auth]
+      summary: Authenticate user and return JWT token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [usr, pwd]
+              properties:
+                usr:
+                  type: string
+                  example: JohnDoe
+                pwd:
+                  type: string
+                  example: secretPassword
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Invalid credentials.
+
+
+  ###############################################
+  #                  USER                       #
+  ###############################################
+
+  /api/users/{userId}:
+    get:
+      tags: [user]
+      security: [{ bearerAuth: [] }]
+      summary: Get user by ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found.
+
+    delete:
+      tags: [user]
+      security: [{ bearerAuth: [] }]
+      summary: Delete your account.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Account deleted successfully.
+        "403":
+          description: Unauthorized.
+
+  /api/users/{userId}/username:
+    put:
+      tags: [user]
+      security: [{ bearerAuth: [] }]
+      summary: Update username.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [newUsername]
+              properties:
+                newUsername:
+                  type: string
+                  example: johnDoeee
+      responses:
+        "200":
+          description: Username updated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                  userName:
+                    type: string
+                    example: johnDoeee
+                  profilePicture:
+                    type: string
+                  creationDate:
+                    type: string
+                    format: date-time
+        "403":
+          description: Unauthorized.
+        "409":
+          description: Username already exists.
+
+  /api/users/{userId}/password:
+    put:
+      tags: [user]
+      security: [{ bearerAuth: [] }]
+      summary: Update password.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [oldPassword, newPassword]
+              properties:
+                oldPassword:
+                  type: string
+                  example: secretPassword
+                newPassword:
+                  type: string
+                  example: newSecretPassword
+      responses:
+        "200":
+          description: Password updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: New password must be different from the old one.
+        "401":
+          description: Wrong password.
+        "403":
+          description: Unauthorized.
+
+  /api/users/{userId}/profilePicture:
+    put:
+      tags: [user]
+      security: [{ bearerAuth: [] }]
+      summary: Update profile picture.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                profilePicture:
+                  type: string
+                  format: file
+      responses:
+        "200":
+          description: Profile picture updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "500":
+          description: Only image files allowed.
+
+
+  ###############################################
+  #                 COMMENTS                    #
+  ###############################################
+
+  /api/memes/{memeId}/comments:
+    post:
+      tags: [comment]
+      security: [{ bearerAuth: [] }]
+      summary: Add a comment to a meme.
+      parameters:
+        - name: memeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+      responses:
+        "201":
+          description: Comment added successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "400":
+          description: Invalid comment content.
+          
+    get:
+      tags: [comment]
+      security: [{ bearerAuth: [] }]
+      summary: Get paginated comments for a meme.
+      parameters:
+        - name: memeId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: List of comments.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Comment"
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+                  totalPages:
+                    type: integer
+        "404":
+          description: Meme not found.
+
+  /api/comments/{commentId}:
+    delete:
+      tags: [comment]
+      security: [{ bearerAuth: [] }]
+      summary: Delete a comment.
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Comment deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "403":
+          description: Unauthorized.
+        "404":
+          description: Comment not found.
+    
+    put:
+      tags: [comment]
+      security: [{ bearerAuth: [] }]
+      summary: Update a comment.
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+      responses:
+        "200":
+          description: Comment updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment" 
+          
+
+  ###############################################
+  #                   VOTES                     #
+  ###############################################
+
+  /api/memes/{memeId}/votes:
+    post:
+      tags: [vote]
+      security: [{ bearerAuth: [] }]
+      summary: Cast a vote on a meme.
+      parameters:
+        - name: memeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [voteType]
+              properties:
+                voteType:
+                  type: integer
+                  enum: [1, -1]
+      responses:
+        "200":
+          description: Vote saved.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote" 
+        "409":
+          description: User already voted this meme.
+        "500":
+          description: Invalid vote type.
+          
+    get:
+      tags: [vote]
+      security: [{ bearerAuth: [] }]
+      summary: Get all the votes for a meme.
+      parameters:
+        - name: memeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Sum of upvotes and downvotes.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  upvotes:
+                    type: integer
+                  downvotes:
+                    type: integer
+        "404":
+          description: Meme not found.
+        
+      
+
+  /api/votes/{voteId}:
+    delete:
+      tags: [vote]
+      security: [{ bearerAuth: [] }]
+      summary: Delete a vote.
+      parameters:
+        - name: voteId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Vote deleted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote" 
+        "403":
+          description: Unauthorized.
+  
+    put:
+      tags: [vote]
+      security: [{ bearerAuth: [] }]
+      summary: Update vote.
+      parameters:
+        - name: voteId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [voteType]
+              properties:
+                voteType:
+                  type: integer
+                  enum: [1, -1]
+      responses:
+        "200":
+          description: Vote updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vote" 
+        "403":
+          description: Unauthorized.
+        "500":
+          description: Invalid vote type/Already voted.

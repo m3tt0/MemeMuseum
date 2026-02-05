@@ -6,10 +6,9 @@ import fs from "fs/promises";
 
 export class userController {
 
-    
     static async getUserById(userId) { 
-        const user = User.findByPk(userId);
-        return user;
+        const excludeFields = ['password'];
+        return User.findByPk(userId, {attributes: {exclude: excludeFields}});
     }
 
     
@@ -47,7 +46,7 @@ export class userController {
     
     static async updatePassword(userId, oldPwd, newPwd) {
 
-        const user = await this.getUserById(userId);
+        const user = await User.findByPk(userId);
                 
         const ok = await bcrypt.compare(oldPwd, user.password);
         if (!ok) throw httpErrorHandler(401, "Old password is incorrect");
@@ -63,7 +62,7 @@ export class userController {
 
     
     static async updateProfilePicture(userId, filePath) {
-        const user = await User.findByPk(userId);
+        const user = await this.getUserById(userId);
         const oldPicture = user.profilePicture;
 
         if(oldPicture){      

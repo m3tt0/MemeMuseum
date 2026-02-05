@@ -25,7 +25,7 @@ voteRouter.delete("/votes/:voteId", ensureUserModifyOnlyOwnVotes, (req, res, nex
     });
 });
 
-voteRouter.put("/memes/votes/:voteId", ensureUserModifyOnlyOwnVotes, (req, res, next) => {
+voteRouter.put("/votes/:voteId", ensureUserModifyOnlyOwnVotes, (req, res, next) => {
     voteController.updateVote(req.body, req.params.voteId)
     .then( result => {
         res.json(result);

@@ -44,7 +44,7 @@ export class commentController {
     // Paginated fetch of comments for a meme
     // page = 1-based page number, pageSize = items per page (default 10, max 100)
     static async getCommentsByMeme(memeId, page = 1, pageSize = 10){
-        const meme = await Meme.findByPk(memeId);
+        const meme = await this.getCommentById(memeId);
         if (!meme) {
             throw httpErrorHandler(404, "Meme not found");
         }
