@@ -2,6 +2,7 @@ import { User, Vote, Comment, Meme} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+//import sanitizeHtml from "sanitize-html";
 
 export class authController{
     //Gestione delle richieste su /auth e controllo delle credenziali

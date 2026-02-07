@@ -1,6 +1,6 @@
-import { Comment, Meme, User} from "../models/MemeMuseumDB.js";
+import { Comment, User} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
-
+import sanitizeHtml from "sanitize-html";
 
 
 export class commentController {
@@ -8,9 +8,9 @@ export class commentController {
 
     static async newComment(commentBody, userId, memeId){
         return Comment.create({
-            content: commentBody.content,
-            userId: userId,
-            memeId: memeId
+            content: sanitizeHtml(commentBody.content),
+            userId: sanitizeHtml(userId),
+            memeId: sanitizeHtml(memeId)
         });
     }
 
@@ -32,22 +32,25 @@ export class commentController {
 
         return new Promise ( (resolve, reject) => {
             this.getCommentById(commentId).then( comment => {
-                comment.update(updatedCommentBody).then( () => {resolve(comment)})
+                comment.update(sanitizeHtml(updatedCommentBody)).then( () => {resolve(comment)})
             })
         });
     }
 
     static async getCommentById(commentId){
-        return Comment.findByPk(commentId);    
+        return Comment.findByPk(sanitizeHtml(commentId));    
     }
 
-    // Paginated fetch of comments for a meme
-    // page = 1-based page number, pageSize = items per page (default 10, max 100)
+
     static async getCommentsByMeme(memeId, page = 1, pageSize = 10){
         const meme = await this.getCommentById(memeId);
         if (!meme) {
             throw httpErrorHandler(404, "Meme not found");
         }
+        
+        memeId = sanitizeHtml(memeId);
+        page = sanitizeHtml(page);
+        pageSize = sanitizeHtml(pageSize);
 
         page = parseInt(page, 10) || 1;
         pageSize = parseInt(pageSize, 10) || 10;
