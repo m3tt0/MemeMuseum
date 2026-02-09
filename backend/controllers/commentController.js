@@ -1,16 +1,14 @@
 import { Comment, User} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
-import sanitizeHtml from "sanitize-html";
-
 
 export class commentController {
     //Gestione delle richieste su /comments
 
     static async newComment(commentBody, userId, memeId){
         return Comment.create({
-            content: sanitizeHtml(commentBody.content),
-            userId: sanitizeHtml(userId),
-            memeId: sanitizeHtml(memeId)
+            content: commentBody.content,
+            userId: userId,
+            memeId: memeId
         });
     }
 
@@ -32,13 +30,13 @@ export class commentController {
 
         return new Promise ( (resolve, reject) => {
             this.getCommentById(commentId).then( comment => {
-                comment.update(sanitizeHtml(updatedCommentBody)).then( () => {resolve(comment)})
+                comment.update(updatedCommentBody).then( () => {resolve(comment)})
             })
         });
     }
 
     static async getCommentById(commentId){
-        return Comment.findByPk(sanitizeHtml(commentId));    
+        return Comment.findByPk(commentId);    
     }
 
 
@@ -47,10 +45,6 @@ export class commentController {
         if (!meme) {
             throw httpErrorHandler(404, "Meme not found");
         }
-        
-        memeId = sanitizeHtml(memeId);
-        page = sanitizeHtml(page);
-        pageSize = sanitizeHtml(pageSize);
 
         page = parseInt(page, 10) || 1;
         pageSize = parseInt(pageSize, 10) || 10;

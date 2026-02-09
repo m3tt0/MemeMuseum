@@ -4,17 +4,11 @@ import path from "path";
 import fs from "fs/promises";
 import { resolveTags , validateTagContent } from "../utils/tagUtils.js"
 import { httpErrorHandler } from "../utils/httpUtils.js";
-import sanitizeHtml from "sanitize-html";
-
 
 export class memeController{
     //Gestione delle richieste su /memes
 
     static async newMeme(memeBody, memePath, userId){
-        memeBody = sanitizeHtml(memeBody);
-        memePath = sanitizeHtml(memePath);
-        userId = sanitizeHtml(userId);
-
         return database.transaction(async (t) => {
 
                 const meme = await Meme.create({
@@ -47,19 +41,19 @@ export class memeController{
     static async updateMeme(memeId, updatedMemeBody){
         return new Promise ((resolve, reject) => {
             this.getMemeById(memeId).then( meme => {
-                meme.update({caption: sanitizeHtml(updatedMemeBody.caption)}).then(() => {resolve(meme)})
+                meme.update({caption: updatedMemeBody.caption}).then(() => {resolve(meme)})
             })
         });
     }
 
     static async getMemeById(memeId){
-        return Meme.findByPk(sanitizeHtml(memeId));    
+        return Meme.findByPk(memeId);    
     }
 
 
 
     static async searchMemes(filters) {
-        const { tag, text, from, to, sort = "newest", page = 1, limit = 10, username } = sanitizeHtml(filters);
+        const { tag, text, from, to, sort = "newest", page = 1, limit = 10, username } = filters;
 
         const where = {};
         const include = [];

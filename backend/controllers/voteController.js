@@ -1,14 +1,11 @@
 import { Vote } from "../models/MemeMuseumDB.js";
 import { Sequelize } from "sequelize";
 import { httpErrorHandler } from "../utils/httpUtils.js";
-import sanitizeHtml from "sanitize-html";
 
 export class voteController {
     //Gestione delle richieste su /votes
 
     static async newVote(voteBody, userId, memeId){
-        userId = sanitizeHtml(userId);
-        memeId = sanitizeHtml(memeId);
         const existingVote = await Vote.findOne({
             where: {
                 userId: userId,
@@ -20,7 +17,7 @@ export class voteController {
             throw httpErrorHandler(409, "You have already voted for this meme.");
         }
         return Vote.create({
-            voteType: sanitizeHtml(voteBody.voteType), 
+            voteType: voteBody.voteType, 
             userId: userId,
             memeId: memeId
         });
@@ -35,7 +32,6 @@ export class voteController {
     }
 
     static async updateVote(updatedVoteBody, voteId) {
-        updatedVoteBody = sanitizeHtml(updatedVoteBody);
         const vote = await this.getVoteById(voteId);
         if (!vote) throw httpErrorHandler(404, "Vote not found");
         else if (vote.voteType === updatedVoteBody.voteType) throw httpErrorHandler(500, "You have already voted with this vote type!")
@@ -44,11 +40,10 @@ export class voteController {
 
 
     static async getVoteById(voteId){
-        return Vote.findByPk(sanitizeHtml(voteId));    
+        return Vote.findByPk(voteId);    
     }
 
     static async getVotesByMeme(memeId){
-        memeId = sanitizeHtml(memeId);
         const results = await Vote.findAll({
             where: { memeId },
             attributes: [

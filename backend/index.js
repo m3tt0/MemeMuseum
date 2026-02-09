@@ -8,6 +8,7 @@ import * as OpenApiValidator from "express-openapi-validator";
 import { database } from "./models/MemeMuseumDB.js";
 
 import { checkNonEmptyBodyFields } from "./utils/emptyBodyUtils.js"
+import { sanitizeRequestBody } from "./utils/sanitizeInputUtils.js";
 import { enforceAuthentication } from "./middleware/authMiddleware.js";
 
 import { authRouter } from "./routes/authRouter.js";
@@ -23,6 +24,7 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.static("uploads")); //file statici dalla cartella uploads
 app.use(express.json());
+app.use(sanitizeRequestBody);
 app.use(checkNonEmptyBodyFields);
 
 const apiSpec = YAML.load("./openapi.yaml");

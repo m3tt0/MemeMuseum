@@ -1,7 +1,6 @@
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import { httpErrorHandler } from "../utils/httpUtils.js";
 
 const uploadFolder = process.env.UPLOAD_PROFILE_DIR;
 

@@ -3,19 +3,17 @@ import bcrypt from "bcrypt";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 import path from "path";
 import fs from "fs/promises";
-import sanitizeHtml from "sanitize-html";
 
 export class userController {
 
     static async getUserById(userId) { 
         const excludeFields = ['password'];
-        return User.findByPk(sanitizeHtml(userId), {attributes: {exclude: excludeFields}});
+        return User.findByPk(userId, {attributes: {exclude: excludeFields}});
     }
 
     
     static async deleteUser(userId) {
         const deleteUser = await this.getUserById(userId);
-        userId = sanitizeHtml(userId);
         if (!deleteUser) {
             throw httpErrorHandler(404, "User not found");
         }
@@ -46,9 +44,6 @@ export class userController {
 
     
     static async updatePassword(userId, oldPwd, newPwd) {
-        userId = sanitizeHtml(userId);
-        oldPwd = sanitizeHtml(oldPwd);
-        newPwd = sanitizeHtml(newPwd);
         const user = await User.findByPk(userId);
                 
         const ok = await bcrypt.compare(oldPwd, user.password);
@@ -71,7 +66,6 @@ export class userController {
         if(oldPicture){      
             await fs.unlink(path.resolve(oldPicture)).catch( err => {console.warn("Could not delete old profile image:", err.message); });
         }
-        filePath = sanitizeHtml(filePath);
         const normalizedPath = filePath.replace(/\\/g, "/");
         const userUpdated = await user.update({profilePicture: normalizedPath});
 
