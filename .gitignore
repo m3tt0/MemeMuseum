@@ -11,6 +11,6 @@
 **/.env.local
 
 #Dump / SQL
-backend/data/*sqlite
+backend/data/
 eslint.config.js
 backend/uploads/
