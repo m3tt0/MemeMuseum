@@ -1,28 +1,42 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 export interface AuthRequest {
   usr: string;
   pwd: string;
 }
-// Response del login
+
 export interface LoginResponse {
   token: string;
 }
 
-// Response del signup
 export interface SignupResponse {
-  userId: number;
-  userName: string;
+  usr: string;
+  pwd: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  user: {
-    userId: number;
-    userName: string;
-  };
+export interface Meme {
+  memeId: number;
+  caption: string | null;
+  imagePath: string;
+  creationDate: string;
+  userId: number;
+
+  User: { userName: string };
+  tags?: { content: string }[];
+  upvotes?: number;
+  downvotes?: number;
+}
+
+export interface MemeSearchParams {
+  tag?: string;
+  text?: string;
+  from?: string;
+  to?: string;
+  username?: string;
+  sort?: 'newest' | 'oldest' | 'top' | 'bottom';
+  page?: number;
+  limit?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -31,16 +45,19 @@ export class RestBackendService {
   private apiUrl = 'http://localhost:3030/api';
 
   // Autenticazione
-  login(credentials: AuthRequest): Observable<LoginResponse> {
+  login(credentials: AuthRequest){
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials);
   }
 
-  signup(userData: AuthRequest): Observable<SignupResponse> {
-    return this.http.post<SignupResponse>(`${this.apiUrl}/auth/signup`, userData);
+  signup(credentials: AuthRequest){
+    return this.http.post<SignupResponse>(`${this.apiUrl}/auth/signup`, credentials);
   }
 
-  // Altri metodi per future API
+  getMemes(params: MemeSearchParams = {}) {
+    return this.http.get<Meme[]>(`${this.apiUrl}/memes/search`, {
+      params: params as any,
+    });
+  }
 
 
-  // Aggiungerai altre chiamate API qui in futuro
 }

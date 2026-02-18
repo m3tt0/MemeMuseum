@@ -13,7 +13,13 @@ export default defineConfig(({ mode }) => ({
     mainFields: ['module'],
   },
   plugins: [
-    analog(),
+    analog({
+      ssr: false,
+      static: true,
+      prerender: {
+        routes: ['/', '/auth/login', '/auth/signup'],
+      }
+    }),
     tailwindcss()
   ],
   test: {

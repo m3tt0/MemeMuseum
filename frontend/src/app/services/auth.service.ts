@@ -1,175 +1,135 @@
-// src/app/services/auth.service.ts
-import { Injectable, inject, signal, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { Router } from '@angular/router';
-import { tap, catchError, switchMap } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
-import { 
-  RestBackendService, 
-  AuthRequest, 
-  LoginResponse,
-  SignupResponse 
-} from './rest-backend.service';
+import { Injectable, WritableSignal, computed, effect, signal } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 
-export interface User {
-  userId: number;
-  userName: string;
+export interface DecodedToken {
+  user?: string;
+  sub?: number;
+  exp?: number;
+  
+}
+
+export interface AuthState {
+  user: string | null;      
+  token: string | null;     
+  isAuthenticated: boolean; 
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private backendService = inject(RestBackendService);
-  private router = inject(Router);
-  private platformId = inject(PLATFORM_ID);
-  
-  // Stato reattivo
-  currentUser = signal<User | null>(null);
-  isAuthenticated = signal<boolean>(false);
-  
-  private isBrowser = isPlatformBrowser(this.platformId);
-  private readonly TOKEN_KEY = 'access_token';
-  private readonly USER_KEY = 'user';
 
-  constructor() {
-    this.checkAuthStatus();
-  }
+  authState: WritableSignal<AuthState> = signal<AuthState>({
+    user: this.getUserFromStorage(),
+    token: this.getTokenFromStorage(),
+    isAuthenticated: false,
+  });
 
-  // Login - riceve token e poi estrae user info dal token
-  login(credentials: AuthRequest): Observable<LoginResponse> {
-    return this.backendService.login(credentials).pipe(
-      tap(response => {
-        // Salva il token
-        if (this.isBrowser) {
-          localStorage.setItem(this.TOKEN_KEY, response.token);
-        }
+  user = computed(() => this.authState().user);
+  token = computed(() => this.authState().token);
+  isAuthenticated = computed(() => this.authState().isAuthenticated);
 
-        // Estrae le info utente dal JWT
-        const userInfo = this.decodeToken(response.token);
-        if (userInfo) {
-          if (this.isBrowser) {
-            localStorage.setItem(this.USER_KEY, JSON.stringify(userInfo));
-          }
-          this.currentUser.set(userInfo);
-          this.isAuthenticated.set(true);
-        }
-      }),
-      catchError(error => {
-        console.error('Login error:', error);
-        return throwError(() => error);
-      })
-    );
-  }
+constructor() {
+  effect(() => {
+    const { user, token } = this.authState();
 
-  // Signup - registra l'utente e poi fa il login automatico
-  signup(userData: AuthRequest): Observable<SignupResponse> {
-    return this.backendService.signup(userData).pipe(
-      tap(response => {
-        console.log('Signup successful:', response);
-        // Non fare login automatico, reindirizza alla login
-      }),
-      catchError(error => {
-        console.error('Signup error:', error);
-        return throwError(() => error);
-      })
-    );
-  }
 
-  // Signup con auto-login (alternativa)
-  signupAndLogin(userData: AuthRequest): Observable<LoginResponse> {
-    return this.backendService.signup(userData).pipe(
-      switchMap(() => {
-        // Dopo signup, fai login automatico
-        return this.login(userData);
-      }),
-      catchError(error => {
-        console.error('Signup/Login error:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  // Logout
-  logout(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem(this.TOKEN_KEY);
-      localStorage.removeItem(this.USER_KEY);
+    if (token !== null) {
+      localStorage.setItem('token', token);
+    } else {
+      localStorage.removeItem('token');
     }
-    
-    this.currentUser.set(null);
-    this.isAuthenticated.set(false);
-    this.router.navigate(['/login']);
+
+    if (user !== null) {
+      localStorage.setItem('user', user);
+    } else {
+      localStorage.removeItem('user');
+    }
+  });
+
+  this.checkInitialAuthState();
+}
+
+
+  async updateToken(token: string) {
+    const decoded = this.safeDecode(token);
+    const username = decoded?.user ?? null;
+
+    this.authState.set({
+      user: username,
+      token,
+      isAuthenticated: this.verifyToken(token),
+    });
   }
 
-  // Ottieni il token JWT
+
   getToken(): string | null {
-    if (this.isBrowser) {
-      return localStorage.getItem(this.TOKEN_KEY);
-    }
-    return null;
+    return this.authState().token;
   }
 
-  // Ottieni l'utente corrente
-  getUser(): User | null {
-    if (this.isBrowser) {
-      const userStr = localStorage.getItem(this.USER_KEY);
-      return userStr ? JSON.parse(userStr) : null;
-    }
-    return null;
+  getUser(): string | null {
+    return this.authState().user;
   }
 
-  // Decodifica il JWT per estrarre le info utente
-  private decodeToken(token: string): User | null {
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return {
-        userId: payload.sub,
-        userName: payload.userName
-      };
-    } catch (e) {
-      console.error('Error decoding token:', e);
-      return null;
-    }
+  private getTokenFromStorage(): string | null {
+    return localStorage.getItem('token');
   }
 
-  // Verifica se il token è valido
-  isTokenValid(): boolean {
-    const token = this.getToken();
+  private getUserFromStorage(): string | null {
+    return localStorage.getItem('user');
+  }
+
+  private safeDecode(token: string | null): DecodedToken | null {
+    if (!token) return null;
+      return jwtDecode<DecodedToken>(token);
+  }
+
+  verifyToken(token: string | null): boolean {
     if (!token) return false;
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      
-      // Controlla se è scaduto (exp in secondi)
-      const exp = payload.exp * 1000;
-      return Date.now() < exp;
-    } catch (e) {
+    const decoded = this.safeDecode(token);
+    if (!decoded || decoded.exp === undefined) {
       return false;
+    }
+
+    // exp in secondi → millisecondi
+    return Date.now() < decoded.exp * 1000;
+  }
+
+  isUserAuthenticated(): boolean {
+    return this.verifyToken(this.getToken());
+  }
+
+
+
+  private checkInitialAuthState() {
+    const token = this.getTokenFromStorage();
+    const user = this.getUserFromStorage();
+
+    if (token && this.verifyToken(token)) {
+      // token valido → stato autenticato
+      this.authState.set({
+        user,
+        token,
+        isAuthenticated: true,
+      });
+    } else {
+      // token assente o scaduto → logout
+      this.authState.set({
+        user: null,
+        token: null,
+        isAuthenticated: false,
+      });
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   }
 
-  // Controlla lo stato di autenticazione all'avvio
-  private checkAuthStatus(): void {
-    if (this.isBrowser) {
-      const token = this.getToken();
-      const user = this.getUser();
-      
-      if (token && user && this.isTokenValid()) {
-        this.currentUser.set(user);
-        this.isAuthenticated.set(true);
-      } else if (token && !user) {
-        // Se c'è il token ma non le info utente, prova a decodificarle
-        const decodedUser = this.decodeToken(token);
-        if (decodedUser && this.isTokenValid()) {
-          if (this.isBrowser) {
-            localStorage.setItem(this.USER_KEY, JSON.stringify(decodedUser));
-          }
-          this.currentUser.set(decodedUser);
-          this.isAuthenticated.set(true);
-        }
-      } else {
-        // Token scaduto o non valido
-        this.logout();
-      }
-    }
+  logout() {
+    this.authState.set({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    });
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 }

@@ -17,12 +17,17 @@ import { memeRouter } from "./routes/memeRouter.js";
 import { voteRouter } from "./routes/voteRouter.js";
 import { commentRouter } from "./routes/commentRouter.js";
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(morgan('dev'));
 app.use(cors());
-app.use(express.static("uploads")); //file statici dalla cartella uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); //file statici dalla cartella uploads
 app.use(express.json());
 app.use(sanitizeRequestBody);
 app.use(checkNonEmptyBodyFields);
@@ -36,6 +41,7 @@ app.use(
     apiSpec: "openapi.yaml",
     validateRequests: true,
     validateResponses: false,
+    ignorePaths: /^\/uploads(\/|$)/,
   })
 );
 

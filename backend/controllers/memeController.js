@@ -88,9 +88,17 @@ export class memeController{
             include.push({
                 model: User,
                 where: { userName: username },
-                required: true
-            });
-        }
+                required: true,
+                attributes: ["userName", "profilePicture"],
+                });
+        }   else {
+                // include generico, solo per avere userName
+            include.push({
+                model: User,
+                required: false,
+                attributes: ["userName", "profilePicture"],
+                });
+            }
 
         //validazione tag e costruzione query
         if (tag !== undefined) {

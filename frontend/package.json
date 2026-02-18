@@ -7,7 +7,7 @@
   },
   "scripts": {
     "ng": "ng",
-    "dev": "vite --host",
+    "dev": "vite",
     "start": "npm run dev",
     "build": "vite build",
     "watch": "vite build --watch",
@@ -18,7 +18,7 @@
   "dependencies": {
     "@analogjs/content": "^2.2.3",
     "@analogjs/router": "^2.2.3",
-    "@angular/animations": "^21.0.0",
+    "@angular/animations": "^21.1.4",
     "@angular/common": "^21.0.0",
     "@angular/compiler": "^21.0.0",
     "@angular/core": "^21.0.0",
