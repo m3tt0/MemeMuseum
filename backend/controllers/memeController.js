@@ -1,4 +1,4 @@
-import { Meme, Tag, Vote, User, database } from "../models/MemeMuseumDB.js";
+import { Meme, Tag, Vote, User, Comment, database } from "../models/MemeMuseumDB.js";
 import { Op, Sequelize } from "sequelize";
 import path from "path";
 import fs from "fs/promises";
@@ -53,113 +53,165 @@ export class memeController{
 
 
     static async searchMemes(filters) {
-        const { tag, text, from, to, sort = "newest", page = 1, limit = 10, username } = filters;
+    const {
+        tag,
+        text,
+        from,
+        to,
+        sort = "newest",
+        page = 1,
+        limit = 10,
+        username,
+        feed = false,
+    } = filters;
 
-        const where = {};
-        const include = [];
+    const offset = (page - 1) * limit;
 
-        //validazione del filtro della caption e costruzione query
-        if (text !== undefined) {
-            if (text.trim() === "") throw httpErrorHandler(400, "Text filter cannot be empty!");
-
-            where.caption = { [Op.like]: `%${text}%` };
-        }
-
-        //validazione filtro range date e costruzione query
-        if (from !== undefined) {
-            if(isNaN(Date.parse(from))) throw httpErrorHandler(400, "Invalid 'from' date format");
-            
-            where.creationDate = where.creationDate || {};
-            where.creationDate[Op.gte] = new Date(from);
-        }
-        if (to !== undefined) {
-            if (isNaN(Date.parse(to))) {
-                throw httpErrorHandler(400, "Invalid 'to' date format");
-            }
-            where.creationDate = where.creationDate || {};
-            where.creationDate[Op.lte] = new Date(to);
-        }
-
-        //validazione username e costruzione query
-        if (username !== undefined) {
-            if (username.trim() === "") {
-                throw httpErrorHandler(400, "Username cannot be empty");
-            }
-            include.push({
-                model: User,
-                where: { userName: username },
-                required: true,
-                attributes: ["userName", "profilePicture"],
-                });
-        }   else {
-                // include generico, solo per avere userName
-            include.push({
-                model: User,
-                required: false,
-                attributes: ["userName", "profilePicture"],
-                });
-            }
-
-        //validazione tag e costruzione query
-        if (tag !== undefined) {
-            const normalized = validateTagContent(tag);
-            include.push({
-                model: Tag,
-                where: { content: normalized },
-                required: true
-            });
-        }
-
-        let order = [["creationDate", "DESC"]];
-        const attributes = { include: [] };
-        let group = ["Meme.memeId"];
-
-        //ordine in base ai meme con piu upvote
-        if (sort === "top") {
-            include.push({
-                model: Vote,
-                attributes: []
-            });
-
-            attributes.include = [[ Sequelize.literal(`SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`), "upvotes"]];
-
-            group = ["Meme.memeId"];
-            order = [[Sequelize.literal("upvotes"), "DESC"]];
-        }
-        //ordine in base ai meme con piu downvote
-        else if (sort === "bottom") {
-            include.push({
-                model: Vote,
-                attributes: []
-            });
-
-            attributes.include = [[ Sequelize.literal(`SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`), "downvotes"]];
-
-            group = ["Meme.memeId"];
-            order = [[Sequelize.literal("downvotes"), "DESC"]];
-        }
-        //ordine default discendente
-        else if (sort === "newest") {
-            order = [["creationDate", "DESC"]];
-        }
-        //ordine ascendente
-        else if (sort === "oldest") {
-            order = [["creationDate", "ASC"]];
-        }
-
-        const offset = (page - 1) * limit;
+    //feed per caricare il feed della homepage
+    if (feed === true) {
+        
+        const order =
+        sort === "oldest"
+            ? [["creationDate", "ASC"]]
+            : [["creationDate", "DESC"]];
 
         return Meme.findAll({
-            where,
-            include,
-            attributes,
-            group,
-            order,
-            limit,
-            offset,
-            subQuery: false
+        where: {},                    
+        include: [
+            {
+            model: User,              
+            attributes: ["userName"],
+            },
+            {
+            model: Vote,              
+            attributes: [],
+            },
+            {
+            model: Comment,
+            },
+            {
+            model: Tag,
+            }
+        ],
+        attributes: {
+            include: [
+            [
+                Sequelize.literal(
+                `SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`
+                ),
+                "upvotes",
+            ],
+            [
+                Sequelize.literal(
+                `SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`
+                ),
+                "downvotes",
+            ],
+            [
+                Sequelize.fn("COUNT", Sequelize.col("Comments.commentId")),
+                "commentsCount",
+            ],
+            ],
+        },
+        group: [
+            "Meme.memeId",
+            "User.userId",        
+        ],
+        order,
+        limit,
+        offset,
+        subQuery: false,
         });
     }
+
+    const where = {};
+    const include = [];
+
+    if (text !== undefined) {
+        if (text.trim() === "")
+        throw httpErrorHandler(400, "Text filter cannot be empty!");
+        where.caption = { [Op.like]: `%${text}%` };
+    }
+
+    if (from !== undefined) {
+        if (isNaN(Date.parse(from)))
+        throw httpErrorHandler(400, "Invalid 'from' date format");
+        where.creationDate = where.creationDate || {};
+        where.creationDate[Op.gte] = new Date(from);
+    }
+
+    if (to !== undefined) {
+        if (isNaN(Date.parse(to)))
+        throw httpErrorHandler(400, "Invalid 'to' date format");
+        where.creationDate = where.creationDate || {};
+        where.creationDate[Op.lte] = new Date(to);
+    }
+
+    if (username !== undefined) {
+        if (username.trim() === "")
+        throw httpErrorHandler(400, "Username cannot be empty");
+        include.push({
+        model: User,
+        where: { userName: username },
+        required: true,
+        });
+    }
+
+    if (tag !== undefined) {
+        const normalized = validateTagContent(tag);
+        include.push({
+        model: Tag,
+        where: { content: normalized },
+        required: true,
+        });
+    }
+
+    let order = [["creationDate", "DESC"]];
+    const attributes = { include: [] };
+    let group = ["Meme.memeId"];
+
+    if (sort === "top") {
+        include.push({ model: Vote, attributes: [] });
+        attributes.include = [
+        [
+            Sequelize.literal(
+            `SUM(CASE WHEN Votes.voteType = 1 THEN 1 ELSE 0 END)`
+            ),
+            "upvotes",
+        ],
+        ];
+        group = ["Meme.memeId"];
+        order = [[Sequelize.literal("upvotes"), "DESC"]];
+    } else if (sort === "bottom") {
+        include.push({ model: Vote, attributes: [] });
+        attributes.include = [
+        [
+            Sequelize.literal(
+            `SUM(CASE WHEN Votes.voteType = -1 THEN 1 ELSE 0 END)`
+            ),
+            "downvotes",
+        ],
+        ];
+        group = ["Meme.memeId"];
+        order = [[Sequelize.literal("downvotes"), "DESC"]];
+    } else if (sort === "newest") {
+        order = [["creationDate", "DESC"]];
+    } else if (sort === "oldest") {
+        order = [["creationDate", "ASC"]];
+    }
+
+    return Meme.findAll({
+        where,
+        include,
+        attributes,
+        group,
+        order,
+        limit,
+        offset,
+        subQuery: false,
+    });
+    }
+
 
     static async getDailyMemes(limit = 5) {
         const today = new Date();

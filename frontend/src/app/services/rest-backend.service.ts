@@ -23,9 +23,10 @@ export interface Meme {
   userId: number;
 
   User: { userName: string };
-  tags?: { content: string }[];
+  Tags?: { content: string }[];
   upvotes?: number;
   downvotes?: number;
+  Comments?: { content: string, creationDate: string}[];
 }
 
 export interface MemeSearchParams {
@@ -37,6 +38,7 @@ export interface MemeSearchParams {
   sort?: 'newest' | 'oldest' | 'top' | 'bottom';
   page?: number;
   limit?: number;
+  feed?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
