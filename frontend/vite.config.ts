@@ -16,9 +16,6 @@ export default defineConfig(({ mode }) => ({
     analog({
       ssr: false,
       static: true,
-      prerender: {
-        routes: ['/', '/auth/login', '/auth/signup'],
-      }
     }),
     tailwindcss()
   ],

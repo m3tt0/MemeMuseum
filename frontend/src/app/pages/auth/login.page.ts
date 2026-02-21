@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink} from '@angular/router';
 import { RestBackendService } from '../../services/rest-backend.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   standalone: true,
   selector: 'login-page',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   template: `
     <!-- Logo e titolo -->
     <div class="mb-8">
@@ -83,7 +83,7 @@ import { ToastrService } from 'ngx-toastr';
     <!-- Link registrazione -->
     <div class="text-center mt-6 text-gray-400">
       Don't have an account yet?
-      <a href="/auth/signup" class="text-blue-500 font-bold hover:underline ml-1">
+      <a routerLink="/auth/signup" class="text-blue-500 font-bold hover:underline ml-1">
         Signup
       </a>
     </div>

@@ -1,14 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink} from '@angular/router';
 import { RestBackendService } from '../../services/rest-backend.service';
-import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
   standalone: true,
   selector: 'login-page',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   template: `
     <!-- Logo e titolo -->
     <div class="mb-8">
@@ -83,7 +82,7 @@ import { ToastrService } from 'ngx-toastr';
     <!-- Link per accesso -->
     <div class="text-center mt-6 text-gray-400">
       Already have an account?
-      <a href="/auth/login" class="text-blue-500 font-bold hover:underline ml-1">
+      <a routerLink="/auth/login" class="text-blue-500 font-bold hover:underline ml-1">
         Login
       </a>
     </div>

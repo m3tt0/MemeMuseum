@@ -7,13 +7,13 @@ import { RestBackendService, Meme } from '../services/rest-backend.service';
 @Component({
   standalone: true,
   selector: 'home-page',
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [CommonModule, RouterLink, NgOptimizedImage],
     template: `
     <div class="min-h-screen bg-gray-900 text-white flex flex-col">
       <!-- HEADER -->
       <div class="navbar bg-gray-900 border-b border-gray-600 shadow-sm">
         <div class="flex-1">
-          <a class="btn btn-ghost text-xl font-bold">MemeMuseum</a>
+          <a class="btn btn-ghost text-xl font-bold" routerLink="/auth/login">MemeMuseum</a>
         </div>
         <div class="flex gap-2">
           <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
