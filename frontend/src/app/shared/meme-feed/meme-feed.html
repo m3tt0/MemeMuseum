@@ -1,0 +1,13 @@
+@if (memes.length === 0) {
+    <p class="text-center text-gray-400">Non ci sono meme per ora...</p>
+} @else {
+    @for (meme of memes; track meme.memeId; let i = $index) {
+      <div class="relative pb-4 mb-4">
+        <app-meme-card
+          [meme]="meme"
+          [priority]="i === 0"
+        ></app-meme-card>
+        <div class="pointer-events-none absolute left-0 right-0 bottom-0 h-px bg-linear-to-r from-transparent via-primary to-transparent"></div>
+      </div>
+    }
+}

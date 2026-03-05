@@ -1,0 +1,32 @@
+<div class="min-h-screen bg-gray-900 text-white flex flex-col">
+    <!-- NAVBAR -->
+    <app-navbar/>
+    <!-- CONTENUTO PRINCIPALE -->
+    <div class="flex justify-center w-full relative">
+    <!-- COLONNA MEME -->
+    <div class="w-full max-w-2xl px-4 mt-10">
+@if (memes | async; as memes){
+@if (memes.length > 0) {
+<app-meme-feed
+    [memes]="memes"
+/>
+}} @else {
+<p class="text-center text-gray-400">Non ci sono meme per ora 😢</p>
+}
+    </div>
+    </div>
+
+    <div class="hidden lg:block absolute right-20 top-40">
+        <div class="flex flex-col items-center">
+        <div
+            class="bubble bubble-right text-sm p-3 bg-gray-100 text-black rounded-lg shadow-md"
+        >
+            Scopri il meme<br />del giorno
+        </div>
+        <img
+            src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fdoge_meme%2Fdoge_meme_PNG11.png&f=1&nofb=1&ipt=5023a93e51ace99ad19500615b92edb8c37ec393d467fea34ca1f7bf595486f1"
+            class="w-24 h-24 mt-4"
+        />
+        </div>
+    </div>
+</div>

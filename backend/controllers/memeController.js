@@ -80,7 +80,7 @@ export class memeController{
         include: [
             {
             model: User,              
-            attributes: ["userName"],
+            attributes: ["userName", "profilePicture"],
             },
             {
             model: Vote,              
@@ -108,7 +108,7 @@ export class memeController{
                 "downvotes",
             ],
             [
-                Sequelize.fn("COUNT", Sequelize.col("Comments.commentId")),
+                Sequelize.fn("COUNT", Sequelize.fn("DISTINCT", Sequelize.col("Comments.commentId"))),
                 "commentsCount",
             ],
             ],

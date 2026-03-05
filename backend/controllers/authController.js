@@ -44,7 +44,8 @@ export class authController{
     static issueToken(user){
         return Jwt.sign({
             sub: user.userId,
-            userName: user.userName
+            userName: user.userName,
+            profilePicture: user.profilePicture
         },
         process.env.TOKEN_SECRET, {expiresIn: '24h'});
     }

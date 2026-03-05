@@ -308,7 +308,7 @@ paths:
               properties:
                 profilePicture:
                   type: string
-                  format: file
+                  format: binary
       responses:
         "200":
           description: Profile picture updated successfully.

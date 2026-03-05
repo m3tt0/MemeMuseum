@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 export interface AuthRequest {
   usr: string;
@@ -10,11 +10,6 @@ export interface LoginResponse {
   token: string;
 }
 
-export interface SignupResponse {
-  usr: string;
-  pwd: string;
-}
-
 export interface Meme {
   memeId: number;
   caption: string | null;
@@ -22,10 +17,11 @@ export interface Meme {
   creationDate: string;
   userId: number;
 
-  User: { userName: string };
+  User: { userName: string, profilePicture?: string };
   Tags?: { content: string }[];
   upvotes?: number;
   downvotes?: number;
+  commentsCount?: number;
   Comments?: { content: string, creationDate: string}[];
 }
 
@@ -41,18 +37,33 @@ export interface MemeSearchParams {
   feed?: boolean;
 }
 
+export interface User {
+  userId: number;
+  userName: string;
+  password?: string;
+  profilePicture?: string;
+  creationDate: string
+}
+
 @Injectable({ providedIn: 'root' })
 export class RestBackendService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3030/api';
 
+    httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json'
+    })
+  };
+
+
   // Autenticazione
   login(credentials: AuthRequest){
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials);
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials, this.httpOptions);
   }
 
   signup(credentials: AuthRequest){
-    return this.http.post<SignupResponse>(`${this.apiUrl}/auth/signup`, credentials);
+    return this.http.post(`${this.apiUrl}/auth/signup`, credentials, this.httpOptions);
   }
 
   getMemes(params: MemeSearchParams = {}) {
@@ -60,6 +71,4 @@ export class RestBackendService {
       params: params as any,
     });
   }
-
-
 }

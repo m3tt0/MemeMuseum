@@ -1,0 +1,44 @@
+<nav class="navbar bg-white border-primary border-b-2 dark:bg-gray-900 p-4">
+  <div class="flex-1">
+    <a routerLink="/" class="inline-flex items-center gap-2 px-1 hover:opacity-90">
+        <img [ngSrc]="'/logo.png'" width="72" height="72" alt="MemeMuseum logo" class="w-18 h-18 object-contain"/>
+        <span class="text-xl font-bold tracking-wide">MemeMuseum</span>
+    </a>
+  </div>
+  <div class="flex gap-2">
+    <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+    @if(this.authService.isUserAuthenticated()){
+        <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+            <img [ngSrc]="userProfilePicture" width="40" height="40" />
+            </div>
+        </div>
+        <ul
+            tabindex="-1"
+            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            <li>
+                <a>Create new meme <span class="badge btn btn-ghost">&#43;</span></a>
+            </li>
+            <li>
+                <a>Update Profile Picture</a>
+            </li>
+            <li>
+                <a>Update Password</a>
+            </li>
+            <li>
+                <a (click)="handleLogoutClick()" routerLink="/auth/login">Logout</a>
+            </li>
+        </ul>
+        </div>        
+    } @else {
+            <div routerLink="/auth/login" tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                <div class="w-10 rounded-full">
+                <img
+                    [src]="userProfilePicture" />
+                </div>
+            </div>
+    }
+
+  </div>
+</nav>
