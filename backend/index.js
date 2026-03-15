@@ -8,7 +8,6 @@ import * as OpenApiValidator from "express-openapi-validator";
 import { database } from "./models/MemeMuseumDB.js";
 
 import { checkNonEmptyBodyFields } from "./utils/emptyBodyUtils.js"
-import { sanitizeRequestBody } from "./utils/sanitizeInputUtils.js";
 import { enforceAuthentication } from "./middleware/authMiddleware.js";
 
 import { authRouter } from "./routes/authRouter.js";
@@ -29,7 +28,6 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); //file statici dalla cartella uploads
 app.use(express.json());
-app.use(sanitizeRequestBody);
 app.use(checkNonEmptyBodyFields);
 
 const apiSpec = YAML.load("./openapi.yaml");
@@ -42,6 +40,7 @@ app.use(
     validateRequests: true,
     validateResponses: false,
     ignorePaths: /^\/uploads(\/|$)/,
+    fileUploader: false,
   })
 );
 
@@ -59,7 +58,7 @@ app.use("/api", userRouter);
 app.use((err, req, res, next) => {
   console.log(err.stack);
   if (err.code === 'LIMIT_FILE_SIZE') {
-    res.status(400).json({ error: err.message });
+    return res.status(400).json({ error: err.message });
   }
   res.status(err.status || 500).json({
     code: err.status || 500,

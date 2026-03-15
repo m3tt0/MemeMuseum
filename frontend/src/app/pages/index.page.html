@@ -1,32 +1,143 @@
 <div class="min-h-screen bg-gray-900 text-white flex flex-col">
-    <!-- NAVBAR -->
-    <app-navbar/>
-    <!-- CONTENUTO PRINCIPALE -->
+    <app-navbar />
+
     <div class="flex justify-center w-full relative">
-    <!-- COLONNA MEME -->
-    <div class="w-full max-w-2xl px-4 mt-10">
-@if (memes | async; as memes){
-@if (memes.length > 0) {
-<app-meme-feed
-    [memes]="memes"
-/>
-}} @else {
-<p class="text-center text-gray-400">Non ci sono meme per ora 😢</p>
-}
-    </div>
+<div class="w-full max-w-2xl px-4 mt-10">
+
+    @if (viewMode() === 'daily') {
+        <div class="mb-4 flex items-center justify-between">
+            <div>
+                <h2 class="text-lg font-bold">Daily Memes</h2>
+                <p class="text-sm text-gray-400">Our selection for you.</p>
+            </div>
+
+            <button class="btn btn-sm btn-outline" (click)="backToFeed()">
+                Back to feed
+            </button>
+        </div>
+    }
+
+    @if (loading() && currentMemes().length === 0) {
+        <div class="flex justify-center mt-6">
+            <button class="btn" disabled>Loading...</button>
+        </div>
+    }
+
+    @if (currentMemes().length > 0) {
+        <app-meme-feed [memes]="currentMemes()" />
+    }
+    
+    @if (!loading() && currentMemes().length === 0) {
+        <p class="text-center text-gray-400">Nothing to see here !</p>
+    }
+    
+    @if (viewMode() === 'feed' && hasMore() && currentMemes().length > 0) {
+        <div class="flex justify-center mt-6 mb-10">
+            <button class="btn btn-primary" [disabled]="loading()" (click)="loadMoreMemes()">
+                {{ loading() ? 'Loading...' : 'Load more' }}
+            </button>
+        </div>
+    }
+    
+    @if (viewMode() === 'feed' && !hasMore() && currentMemes().length > 0) {
+        <p class="text-center text-gray-500 mt-6 mb-10"> Nothing to see here ! </p>
+    }
+
+</div>
     </div>
 
-    <div class="hidden lg:block absolute right-20 top-40">
-        <div class="flex flex-col items-center">
-        <div
-            class="bubble bubble-right text-sm p-3 bg-gray-100 text-black rounded-lg shadow-md"
-        >
-            Scopri il meme<br />del giorno
+@if (showDailyMemeButton()) {
+
+  <!-- DESKTOP -->
+  <div class="hidden lg:block fixed right-6 bottom-6 z-50">
+    <div class="w-48 rounded-xl border border-white/10 bg-base-100/95 backdrop-blur shadow-2xl overflow-hidden">
+      
+      <div class="px-4 pt-4 pb-2">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <p class="text-xs uppercase tracking-wide text-primary font-semibold">
+              Daily Meme
+            </p>
+            <p class="text-xs text-base-content/70 mt-1">
+              Our selection for you.
+            </p>
+          </div>
+
+          <button class="btn btn-ghost btn-xs btn-circle" (click)="closeDailyMeme()" aria-label="Chiudi">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x-icon lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+          </button>
         </div>
-        <img
+      </div>
+
+      <div class="px-4 pb-3">
+        <div class="rounded-xl overflow-hidden bg-base-200 aspect-square">
+          <img
             src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fdoge_meme%2Fdoge_meme_PNG11.png&f=1&nofb=1&ipt=5023a93e51ace99ad19500615b92edb8c37ec393d467fea34ca1f7bf595486f1"
-            class="w-24 h-24 mt-4"
-        />
+            alt="Daily meme"
+            class="w-full h-full object-contain"
+          />
         </div>
+      </div>
+
+      <div class="px-4 pb-4">
+        <p class="text-sm font-medium text-base-content line-clamp-2">
+          Doge never misses.
+        </p>
+
+        <div class="mt-3 flex items-center justify-between">
+          <span class="text-xs text-base-content/60">
+            Trending today
+          </span>
+
+          <button class="btn btn-primary btn-sm rounded-xl" (click)="openDailyMemes()">
+            Open
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
+
+  <!-- MOBILE / TABLET -->
+  <div class="lg:hidden fixed inset-x-3 bottom-3 z-50">
+    <div class="rounded-2xl border border-white/10 bg-base-100/95 backdrop-blur shadow-2xl p-3">
+      <div class="flex items-start gap-3">
+        
+        <div class="w-16 h-16 rounded-xl overflow-hidden bg-base-200 shrink-0">
+          <img
+            src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpngimg.com%2Fuploads%2Fdoge_meme%2Fdoge_meme_PNG11.png&f=1&nofb=1&ipt=5023a93e51ace99ad19500615b92edb8c37ec393d467fea34ca1f7bf595486f1"
+            alt="Daily meme"
+            class="w-full h-full object-contain"
+          />
+        </div>
+
+        <div class="min-w-0 flex-1">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-[11px] uppercase tracking-wide text-primary font-semibold">
+                Daily Meme
+              </p>
+              <p class="text-sm font-semibold text-base-content truncate">
+                Doge never misses
+              </p>
+              <p class="text-xs text-base-content/70 mt-1 line-clamp-2">
+                Our selection for you.
+              </p>
+            </div>
+
+            <button class="btn btn-ghost btn-xs btn-circle shrink-0" (click)="closeDailyMeme()" aria-label="Chiudi">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x-icon lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            </button>
+          </div>
+
+          <div class="mt-3 flex items-center justify-end">
+            <button class="btn btn-primary btn-xs rounded-lg " (click)="openDailyMemes()">
+              Open
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
 </div>

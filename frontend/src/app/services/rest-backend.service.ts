@@ -19,10 +19,11 @@ export interface Meme {
 
   User: { userName: string, profilePicture?: string };
   Tags?: { content: string }[];
+  Votes?: { voteId: number, voteType: number, userId: number}[];
+  Comments?: { content: string, creationDate: string}[];
   upvotes?: number;
   downvotes?: number;
   commentsCount?: number;
-  Comments?: { content: string, creationDate: string}[];
 }
 
 export interface MemeSearchParams {
@@ -56,7 +57,6 @@ export class RestBackendService {
     })
   };
 
-
   // Autenticazione
   login(credentials: AuthRequest){
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials, this.httpOptions);
@@ -66,9 +66,28 @@ export class RestBackendService {
     return this.http.post(`${this.apiUrl}/auth/signup`, credentials, this.httpOptions);
   }
 
-  getMemes(params: MemeSearchParams = {}) {
+  // Ricerca / Gestione Meme
+  getMemes(params: { page?: number; limit?: number }) {
     return this.http.get<Meme[]>(`${this.apiUrl}/memes/search`, {
-      params: params as any,
+      params: {
+        page: String(params.page ?? 1),
+        limit: String(params.limit ?? 10)
+      }
     });
+  }
+
+  getDailyMemes(){
+    return this.http.get<Meme[]>(`${this.apiUrl}/memes/daily`)
+  }
+
+  // Gestione Voti
+  addVote(memeId: number, voteType: 'upvote' | 'downvote'){
+    const vote = voteType === 'upvote' ? 1 : -1;
+    return this.http.post(`${this.apiUrl}/memes/${memeId}/votes`, {voteType: vote}, this.httpOptions);
+  }
+
+  updateVote(voteId: number, newVoteType: 'upvote' | 'downvote'){
+    const newVote = newVoteType === 'upvote' ? 1 : -1;
+    return this.http.put(`${this.apiUrl}/votes/${voteId}`, { voteType: newVote }, this.httpOptions);
   }
 }

@@ -335,7 +335,6 @@ paths:
           multipart/form-data:
             schema:
               type: object
-              required: [image]
               properties:
                 caption:
                   type: string
