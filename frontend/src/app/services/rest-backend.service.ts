@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 export interface AuthRequest {
   usr: string;
@@ -35,7 +35,6 @@ export interface MemeSearchParams {
   sort?: 'newest' | 'oldest' | 'top' | 'bottom';
   page?: number;
   limit?: number;
-  feed?: boolean;
 }
 
 export interface User {
@@ -67,17 +66,26 @@ export class RestBackendService {
   }
 
   // Ricerca / Gestione Meme
-  getMemes(params: { page?: number; limit?: number }) {
-    return this.http.get<Meme[]>(`${this.apiUrl}/memes/search`, {
-      params: {
-        page: String(params.page ?? 1),
-        limit: String(params.limit ?? 10)
+  getMemes(params: MemeSearchParams) {
+    let httpParams = new HttpParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, String(value));
       }
+    });
+
+    return this.http.get<Meme[]>(`${this.apiUrl}/memes/search`, {
+      params: httpParams
     });
   }
 
   getDailyMemes(){
     return this.http.get<Meme[]>(`${this.apiUrl}/memes/daily`)
+  }
+
+  createMeme(formData: FormData){
+    return this.http.post(`${this.apiUrl}/memes`, formData);
   }
 
   // Gestione Voti

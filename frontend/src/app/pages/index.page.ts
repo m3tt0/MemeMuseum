@@ -4,6 +4,7 @@ import { RestBackendService, Meme } from '../services/rest-backend.service';
 import { Navbar } from "../shared/navbar/navbar";
 import { MemeFeed } from '../shared/meme-feed/meme-feed';
 import { finalize } from 'rxjs';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
   standalone: true,
@@ -13,16 +14,21 @@ import { finalize } from 'rxjs';
 })
 export default class HomePage implements OnInit {
   private restService = inject(RestBackendService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   memes = signal<Meme[]>([]);
   dailyMemes = signal<Meme[]>([]);
+  searchMemes = signal<Meme[]>([]);
+
   loading = signal(false);
   hasMore = signal(true);
   page = signal(1);
 
-  viewMode = signal<'feed' | 'daily'>('feed');
+  viewMode = signal<'feed' | 'daily' | 'search'>('feed');
   currentMemes = computed(() =>
-  this.viewMode() === 'daily' ? this.dailyMemes() : this.memes()
+  this.viewMode() === 'daily' ? this.dailyMemes() :
+  this.viewMode() === 'search' ? this.searchMemes(): this.memes()
   );
 
   showDailyMemeButton = signal(true);
@@ -30,14 +36,22 @@ export default class HomePage implements OnInit {
   limit = 10;
 
   ngOnInit(): void {
-    this.loadMoreMemes();
+    this.route.queryParams.subscribe({
+      next: params => {
+
+        if (Object.keys(params).length === 0) {
+          this.viewMode.set('feed');
+          this.loadMemes();
+          return;
+        }
+
+        this.viewMode.set('search');
+        this.loadSearchMeme(params);
+      }
+    });
   }
 
-  closeDailyMeme() {
-    this.showDailyMemeButton.set(false);
-  }
-
-  loadMoreMemes(): void {
+  loadMemes(): void {
     if (this.loading() || !this.hasMore()) return;
 
     this.loading.set(true);
@@ -67,8 +81,40 @@ export default class HomePage implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Errore caricamento meme:', err);
+        console.error('Somethin went wrong during loading Meme Feed:', err);
         this.hasMore.set(false);
+      }
+    });
+  }
+
+  loadSearchMeme(params: Params): void {
+    if (this.loading() || !this.hasMore()) return;
+
+    this.searchMemes.set([]);
+    this.page.set(1);
+    this.hasMore.set(true);
+    this.loading.set(true);
+
+    this.restService.getMemes({
+      tag: params['text'],
+      //text: params['text'],
+      //username: params['text'],
+      from: params['from'],
+      to: params['to'],
+      sort: params['sort'],
+      page: this.page(),
+      limit: this.limit
+    })
+    .pipe(
+      finalize(() => this.loading.set(false))
+    )
+    .subscribe({
+      next: (memes) => {
+        this.searchMemes.set(memes);
+        this.viewMode.set('search');
+      },
+      error: (err) => {
+        console.error('Something went wrong during loading Search Meme', err);
       }
     });
   }
@@ -88,12 +134,17 @@ export default class HomePage implements OnInit {
           this.viewMode.set('daily');
         },
         error: (err) => {
-          console.error('Errore caricamento daily memes:', err);
+          console.error('Something went wrong during loading Daily Meme', err);
         }
     });
   }
 
+  closeDailyMeme() {
+    this.showDailyMemeButton.set(false);
+  }
+
   backToFeed(): void {
+    this.router.navigateByUrl('/');
     this.viewMode.set('feed');
   }
 }

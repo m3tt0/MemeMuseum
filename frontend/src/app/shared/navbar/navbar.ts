@@ -15,6 +15,7 @@ export class Navbar{
   authService = inject(AuthService);
   restService = inject(RestBackendService);
   private fb = inject(FormBuilder);
+  private router = inject(Router);
 
   backendBaseUrl = 'http://localhost:3030/';
   pfp = this.authService.getUserPfp();
@@ -43,12 +44,21 @@ export class Navbar{
 
 
   onSearch(): void {
-    const { searchText, sort, from, to } = this.searchForm.getRawValue();
+    const searchText = this.searchForm.value.searchText?.trim() || null;
+    const sort = this.searchForm.value.sort || null;
+    const from = this.searchForm.value.from || null;
+    const to = this.searchForm.value.to || null;
 
-    this.filtersOpen.set(false);
+    this.router.navigate(['/'], {
+      queryParams: {
+        tag: searchText,
+        sort: sort,
+        from: from,
+        to: to 
+      },
+      queryParamsHandling: ''
+    });
   }
-
-
 
 
   handleLogoutClick(){

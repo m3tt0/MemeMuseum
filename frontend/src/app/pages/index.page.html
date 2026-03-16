@@ -17,6 +17,19 @@
         </div>
     }
 
+    @if (viewMode() === 'search') {
+      <div class="mb-4 flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold">Search results</h2>
+          <p class="text-sm text-gray-400">Memes matching your search.</p>
+        </div>
+
+        <button class="btn btn-sm btn-outline" (click)="backToFeed()">
+          Back to feed
+        </button>
+      </div>
+    }
+
     @if (loading() && currentMemes().length === 0) {
         <div class="flex justify-center mt-6">
             <button class="btn" disabled>Loading...</button>
@@ -33,7 +46,7 @@
     
     @if (viewMode() === 'feed' && hasMore() && currentMemes().length > 0) {
         <div class="flex justify-center mt-6 mb-10">
-            <button class="btn btn-primary" [disabled]="loading()" (click)="loadMoreMemes()">
+            <button class="btn btn-primary" [disabled]="loading()" (click)="loadMemes()">
                 {{ loading() ? 'Loading...' : 'Load more' }}
             </button>
         </div>
