@@ -27,6 +27,7 @@
     "@angular/platform-server": "^21.0.0",
     "@angular/router": "^21.0.0",
     "@tailwindcss/vite": "^4.1.4",
+    "analog": "^0.2.3",
     "front-matter": "^4.0.2",
     "jwt-decode": "^4.0.0",
     "marked": "^15.0.7",
