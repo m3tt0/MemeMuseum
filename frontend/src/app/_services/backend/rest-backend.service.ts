@@ -79,7 +79,7 @@ export interface PaginatedComments {
 @Injectable({ providedIn: 'root' })
 export class RestBackendService {
   private http = inject(HttpClient);
-  private apiUrl = '/api';
+  private apiUrl = 'http://localhost:3030/api';
 
     httpOptions = {
     headers: new HttpHeaders({
