@@ -1,0 +1,14 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+  <div class="w-full max-w-lg rounded-2xl bg-base-100 border border-base-300 shadow-2xl p-6" (click)="$event.stopPropagation()">
+    <h3 class="text-xl font-bold mb-4">Update caption</h3>
+    <textarea [(ngModel)]="editedCaption" rows="4" class="textarea textarea-bordered w-full" placeholder="Write the new caption..."></textarea>
+    <div class="mt-6 flex justify-end gap-3">
+      <button class="btn btn-ghost" (click)="handleClose()" [disabled]="isSaving">
+        Cancel
+      </button>
+      <button class="btn btn-primary" (click)="handleSave()" [disabled]="isSaving">
+        {{ isSaving ? 'Saving...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>

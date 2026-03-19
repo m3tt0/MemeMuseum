@@ -1,6 +1,7 @@
 import { User, Meme, Comment, Vote } from "../models/MemeMuseumDB.js";
 import bcrypt from "bcrypt";
 import { httpErrorHandler } from "../utils/httpUtils.js";
+import { validatePasswordStrength } from "../utils/passwordUtils.js";
 import path from "path";
 import fs from "fs/promises";
 
@@ -12,11 +13,12 @@ export class userController {
     }
 
     
-    static async deleteUser(userId) {
-        const deleteUser = await this.getUserById(userId);
-        if (!deleteUser) {
-            throw httpErrorHandler(404, "User not found");
-        }
+    static async deleteUser(userId, userPwd) {
+        const deleteUser = await User.findByPk(userId);
+        const ok = await bcrypt.compare(userPwd, deleteUser.password);
+
+        if (!deleteUser) throw httpErrorHandler(404, "User not found");
+        else if (!ok) throw httpErrorHandler(401, "Incorrect password");
         else{
             await Meme.destroy({ where: { userId } });
             await Comment.destroy({ where: { userId } });
@@ -50,6 +52,7 @@ export class userController {
         if (!ok) throw httpErrorHandler(401, "Old password is incorrect");
         else if (newPwd === oldPwd) throw httpErrorHandler(400, "New password must be different from the old one");
 
+        validatePasswordStrength(newPwd);
         const newHasedPwd = await bcrypt.hash(newPwd, 12);
         
         return new Promise ( (resolve, reject) => {

@@ -1,4 +1,4 @@
-import { Comment, User} from "../models/MemeMuseumDB.js";
+import { Comment, User, Meme} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export class commentController {
@@ -40,17 +40,20 @@ export class commentController {
     }
 
 
-    static async getCommentsByMeme(memeId, page = 1, pageSize = 10){
-        const meme = await this.getCommentById(memeId);
+    static async getCommentsByMeme(memeId, page = 1, pageSize = 10) {
+        const meme = await Meme.findByPk(memeId);
+
         if (!meme) {
             throw httpErrorHandler(404, "Meme not found");
         }
 
         page = parseInt(page, 10) || 1;
         pageSize = parseInt(pageSize, 10) || 10;
+
         if (page < 1 || pageSize < 1) {
             throw httpErrorHandler(400, "Invalid pagination parameters");
         }
+
         if (pageSize > 100) pageSize = 100;
 
         const offset = (page - 1) * pageSize;
@@ -62,7 +65,7 @@ export class commentController {
             offset,
             include: [{
                 model: User,
-                attributes: ["userName"]
+                attributes: ["userId", "userName", "profilePicture"]
             }]
         });
 

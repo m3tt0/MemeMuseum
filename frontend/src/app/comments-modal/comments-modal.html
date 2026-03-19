@@ -1,0 +1,108 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+  <div class="w-full max-w-2xl max-h-[85vh] rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between border-b border-base-300 px-5 py-4">
+      <div>
+        <h3 class="text-xl font-bold">Comments</h3>
+        <p class="text-sm text-base-content">
+          {{ totalComments() }} comment{{ totalComments() === 1 ? '' : 's' }}
+        </p>
+      </div>
+
+      <button type="button" class="btn btn-ghost btn-sm btn-circle material-icons" (click)="handleClose()" aria-label="Close comments modal">
+        close
+      </button>
+    </div>
+
+    <div class="max-h-[55vh] overflow-y-auto px-5 py-4" (scroll)="onCommentsScroll($event)">
+      @if (loading()) {
+        <div class="flex justify-center py-10">
+          <button class="btn" disabled>Loading comments...</button>
+        </div>
+      }
+
+      @if (!loading() && comments().length === 0) {
+        <div class="py-10 text-center text-base-content/60">
+          No comments yet. Be the first to comment.
+        </div>
+      }
+
+      @if (!loading() && comments().length > 0) {
+        <div class="space-y-5">
+          @for (comment of comments(); track comment.commentId) {
+            <div class="flex gap-3">
+              <div class="avatar">
+                <div class="relative w-10 h-10 rounded-full overflow-hidden bg-base-200 shrink-0">
+                  <img [src]="comment.User.profilePicture ? backendBaseUrl + '/' + comment.User.profilePicture : '/defaultPfp.png'" fill alt="Comment author profile picture" class="w-full h-full object-cover" />
+                </div>
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <span class="font-semibold leading-tight">
+                        {{ comment.User.userName }}
+                      </span>
+                      <span class="text-xs text-base-content/50">
+                        {{ comment.creationDate | date:'short' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  @if (canManageComment(comment)) {
+                    <div class="flex items-center gap-2 shrink-0">
+                      @if (!isEditingComment(comment.commentId)) {
+                        <button type="button" class="btn btn-ghost btn-xs material-icons" (click)="startEditComment(comment)" >
+                          edit
+                        </button>
+                        <button type="button" class="btn btn-ghost btn-xs text-error material-icons" [disabled]="isDeletingThisComment(comment.commentId)" (click)="handleDeleteComment(comment.commentId)" >
+                          delete
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+
+                @if (!isEditingComment(comment.commentId)) {
+                  <p class="mt-2 text-sm leading-relaxed wrap-break-word text-base-content/90">
+                    {{ comment.content }}
+                  </p>
+                }
+
+                @if (isEditingComment(comment.commentId)) {
+                  <div class="mt-3 space-y-3">
+                    <textarea [(ngModel)]="editedCommentContent" rows="3" class="textarea textarea-bordered w-full" placeholder="Edit your comment..."></textarea>
+                    <div class="flex justify-end gap-2">
+                      <button type="button" class="btn btn-ghost btn-sm" (click)="cancelEditComment()" [disabled]="isSavingThisEditedComment(comment.commentId)">
+                        Cancel
+                      </button>
+                      <button type="button" class="btn btn-primary btn-sm" (click)="handleUpdateComment(comment.commentId)" [disabled]="isSavingThisEditedComment(comment.commentId)" >
+                        {{ isSavingThisEditedComment(comment.commentId) ? 'Saving...' : 'Save' }}
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+            <div class="h-px bg-linear-to-r from-transparent via-base-300 to-transparent"></div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="border-t border-base-300 px-5 py-4">
+      <div class="flex gap-3 items-end">
+        <div class="flex-1">
+          <label class="label pb-2">
+            <span class="label-text">Add a comment</span>
+          </label>
+          <textarea [(ngModel)]="newComment" rows="3" class="textarea textarea-bordered w-full" placeholder="Write your comment..."></textarea>
+        </div>
+
+        <button type="button" class="btn btn-primary" [disabled]="submitting()" (click)="handleCreateComment()">
+          {{ submitting() ? 'Posting...' : 'Post' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,131 @@
+<nav class="navbar relative z-50 bg-white border-primary border-b-2 dark:bg-gray-900 p-4 overflow-visible">
+  <div class="flex-1">
+    <a routerLink="/home" class="inline-flex items-center gap-2 px-1 hover:opacity-90">
+        <img [ngSrc]="'/logo.png'" width="72" height="72" alt="MemeMuseum logo" class="w-18 h-18 object-contain"/>
+        <span class="text-xl font-bold tracking-wide">MemeMuseum</span>
+    </a>
+  </div>
+
+  <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="hidden md:flex flex-none w-full max-w-xl items-center gap-2">
+    <div class="relative flex-1">
+      <div class="flex items-center w-full rounded-xl border border-base-300 bg-base-100/70 backdrop-blur">
+        <input formControlName="searchText" type="text" placeholder="Search memes..." class="w-full bg-transparent px-4 py-3 text-sm outline-none"/>
+        <div class="dropdown dropdown-end relative">
+          <div tabindex="0" role="button" class="btn h-full px-3 text-base-content/60 hover:text-primary hover:bg-base-200/60 transition-colors border-l border-base-300" (click)="toggleFilters()" aria-label="Open filters" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sliders-horizontal"><line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/></svg>
+          </div>
+
+          <ul tabindex="-1" class="dropdown-content absolute right-0 menu menu-sm mt-3 w-80 rounded-xl border border-base-300 bg-base-100 p-4 shadow-xl">
+            <div class="space-y-4">
+              <div>
+                <label class="label py-1">
+                  <span class="label-text">Sort by</span>
+                </label>
+                <select formControlName="sort" class="select select-bordered w-full">
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="top">Most Upvoted</option>
+                  <option value="bottom">Most Downvoted</option>
+                </select>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label class="label py-1">
+                    <span class="label-text">From</span>
+                  </label>
+                  <input type="date" formControlName="from" class="input input-bordered w-full" />
+                </div>
+
+                <div>
+                  <label class="label py-1">
+                    <span class="label-text">To</span>
+                  </label>
+                  <input type="date" formControlName="to" class="input input-bordered w-full" />
+                </div>
+              </div>
+              <div class="flex justify-between pt-2">
+                <button type="button" class="btn btn-ghost btn-sm" (click)="resetFilters()">Reset</button>
+                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+              </div>
+            </div>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary rounded-xl">
+      Search
+    </button>
+  </form>
+
+  <div class="flex-1 flex justify-end items-center gap-3">
+    @if(this.authService.isUserAuthenticated()){
+      <div routerLink="/create-meme" class="btn btn-primary rounded-xl hidden sm:inline-flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-plus-icon lucide-square-plus"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+        Create
+      </div>
+      <div class="dropdown dropdown-end">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+          <div class="relative w-10 h-10 rounded-full overflow-hidden">
+            <img [ngSrc]="userProfilePicture" fill priority="true"/>
+          </div>
+        </div>
+        <ul tabindex="-1" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-64 p-2 shadow">
+          <li>
+            <button type="button" class="flex items-center gap-3 w-full" (click)="openUpdatePfpModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-square-user-round-icon lucide-square-user-round"><path d="M18 21a6 6 0 0 0-12 0"/><circle cx="12" cy="11" r="4"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+              <span class="text-base">Update Profile Picture</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="flex items-center gap-3 w-full" (click)="openUpdatePwdModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rectangle-ellipsis-icon lucide-rectangle-ellipsis"><rect width="20" height="12" x="2" y="6" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>
+              <span class="text-base">Update Password</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="flex items-center gap-3 w-full" (click)="openUpdateUsernameModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-pen-icon lucide-user-round-pen"><path d="M2 21a8 8 0 0 1 10.821-7.487"/><path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/><circle cx="10" cy="8" r="5"/></svg>
+              <span class="text-base">Update Username</span>
+            </button>
+          </li>
+          <li>
+            <button class="flex items-center gap-3 w-full" (click)="handleLogoutClick()" routerLink="/auth/login">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out-icon lucide-log-out"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+              <span class="text-base">Logout</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="flex items-center gap-3 w-full text-error" (click)="openDeleteUserModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-x-icon lucide-user-x"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="17" x2="22" y1="8" y2="13"/><line x1="22" x2="17" y1="8" y2="13"/></svg>
+              <span class="text-base">Delete Account</span>
+            </button>
+          </li>
+        </ul>
+      </div>        
+    } 
+    @else {
+      <div routerLink="/auth/login" tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="w-10 rounded-full">
+          <img [src]="userProfilePicture" />
+        </div>
+      </div>
+    }
+  </div>
+</nav>
+
+@if (isUpdatePfpModalOpen()) {
+  <app-update-pfp-modal (close)="closeUpdatePfpModal()"/>
+}
+
+@if (isUpdatePwdModalOpen()) {
+  <app-update-pwd-modal (close)="closeUpdatePwdModal()"/>
+}
+
+@if (isUpdateUsernameModalOpen()) {
+  <app-update-username-modal (close)="closeUpdateUsernameModal()"/>
+}
+
+@if (isDeleteUserModalOpen()) {
+  <app-delete-user-modal (close)="closeDeleteUserModal()"/>
+}

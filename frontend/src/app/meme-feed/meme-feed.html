@@ -1,0 +1,6 @@
+@for (meme of memes; track meme.memeId; let i = $index;) {
+  <div class="pb-6">
+    <app-meme-card [meme]="meme" [priority]="i === 0" (memeDeleted)="memeDeleted.emit($event)" (captionUpdated)="captionUpdated.emit($event)"/>
+      <div class="mt-4 mx-4 h-px bg-linear-to-r from-transparent via-primary to-transparent"></div>
+  </div>
+}

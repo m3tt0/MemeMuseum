@@ -1,5 +1,6 @@
 import { User, Vote, Comment, Meme} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
+import { validatePasswordStrength } from "../utils/passwordUtils.js";
 import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -27,6 +28,7 @@ export class authController{
     }
 
     static async signup(userBody){
+        validatePasswordStrength(userBody.pwd);
         const hashedPwd = await bcrypt.hash(userBody.pwd, 12);
         let user = new User({userName: userBody.usr, password: hashedPwd});
         let userAlreadyExist = await User.findOne({

@@ -1,0 +1,52 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+  <div class="w-full max-w-md rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden"(click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between border-b border-base-300 px-5 py-4">
+      <div>
+        <h3 class="text-xl font-bold">Update Profile Picture</h3>
+          <p class="text-sm text-base-content/60">
+            Upload a new image for your profile.
+          </p>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm btn-circle material-icons" (click)="handleClose()" aria-label="Close modal">
+        close
+      </button>
+    </div>
+
+    <div class="px-5 py-5 space-y-5">
+      <div>
+        <label class="label">
+          <span class="label-text">Choose image</span>
+        </label>
+        <input type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)"/>
+      </div>
+
+      @if (previewUrl()) {
+        <div class="flex justify-center">
+          <div class="relative w-40 h-40 rounded-full overflow-hidden border border-base-300 bg-base-200">
+            <img [src]="previewUrl()!" alt="Profile picture preview" class="w-full h-full object-cover"/>
+          </div>
+        </div>
+      } @else {
+        <div class="flex justify-center">
+          <div class="w-40 h-40 rounded-full border border-dashed border-base-300 bg-base-200 flex items-center justify-center text-base-content/50 text-sm text-center px-4">
+            Image preview
+          </div>
+        </div>
+      }
+
+      <div class="text-xs text-base-content/60 space-y-1">
+        <p>Allowed formats: PNG, JPG, JPEG, WEBP</p>
+        <p>Maximum size: 15 MB</p>
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-3 border-t border-base-300 px-5 py-4">
+      <button type="button" class="btn btn-ghost" [disabled]="uploading()" (click)="handleClose()">
+        Cancel
+      </button>
+      <button type="button" class="btn btn-primary" [disabled]="uploading()" (click)="handleSubmit()">
+        {{ uploading() ? 'Uploading...' : 'Save' }}
+      </button>
+    </div>
+  </div>
+</div>

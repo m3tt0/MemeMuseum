@@ -198,9 +198,24 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pwd:
+                  type: string
+              required:
+                - pwd
       responses:
         "200":
           description: Account deleted successfully.
+        "401":
+          description: Incorrect password.
+        "404":
+          description: User not found.
         "403":
           description: Unauthorized.
 

@@ -19,7 +19,7 @@ userRouter.get("/users/:userId", ensureUserExists, (req, res, next) => {
 });
 
 userRouter.delete("/users/:userId", ensureUserModifyOnlyOwnProfile, (req, res, next) => {
-    userController.deleteUser(req.params.userId)
+    userController.deleteUser(req.params.userId, req.body.pwd)
     .then( result => {
         res.json(result);
     })

@@ -37,7 +37,7 @@ commentRouter.put("/comments/:commentId", ensureCommentExists, ensureUserModifyO
 });
 
 commentRouter.get("/memes/:memeId/comments", ensureMemeExists, (req, res, next) => {
-    commentController.getCommentsByMeme(req.params.memeId)
+    commentController.getCommentsByMeme(req.params.memeId, req.query.page, req.query.pageSize)
     .then( result => {
         res.json(result);
     })

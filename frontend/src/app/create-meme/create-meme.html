@@ -1,0 +1,73 @@
+<div class="min-h-screen bg-gray-900 text-white">
+  <app-navbar />
+
+  <div class="max-w-3xl mx-auto px-4 py-10">
+    <div class="rounded-2xl border border-base-300 bg-base-100 shadow-xl p-6">
+      <h1 class="text-3xl font-bold mb-2">Create a new meme</h1>
+      <p class="text-sm text-base-content/70 mb-6">
+        Upload an image, add a caption and some tags.
+      </p>
+
+      <form [formGroup]="createMemeForm" (ngSubmit)="handleSubmit()" class="space-y-6">
+        <div>
+          <label class="label">
+            <span class="label-text">Meme image</span>
+          </label>
+          <input type="file" accept="image/*" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
+        </div>
+
+        @if (imagePreviewUrl()) {
+          <div class="rounded-2xl overflow-hidden border border-base-300 bg-base-200">
+            <img [src]="imagePreviewUrl()!" alt="Meme preview" class="w-full max-h-125 object-contain" />
+          </div>
+        }
+
+        <div>
+          <label class="label">
+            <span class="label-text">Caption</span>
+          </label>
+
+          <textarea formControlName="caption" rows="4" class="textarea textarea-bordered w-full" placeholder="Write a caption for your meme..." ></textarea>
+
+          @if (createMemeForm.controls.caption.touched && createMemeForm.controls.caption.errors?.['required']) {
+            <p class="text-red-400 text-sm mt-2">Caption is required.</p>
+          }
+
+          @if (createMemeForm.controls.caption.touched && createMemeForm.controls.caption.errors?.['maxlength']) {
+            <p class="text-red-400 text-sm mt-2">Caption must be at most 300 characters.</p>
+          }
+        </div>
+
+        <div>
+          <label class="label">
+            <span class="label-text">Tags</span>
+          </label>
+
+          <div class="flex gap-2">
+            <input [value]="tagInput" (input)="tagInput = $any($event.target).value" (keydown)="handleTagKeydown($event)" class="input input-bordered w-full" placeholder="Add a tag and press Enter" />
+            <button type="button" class="btn btn-outline" (click)="addTag()">
+              Add
+            </button>
+          </div>
+
+          @if (tags().length > 0) {
+            <div class="flex flex-wrap gap-2 mt-3">
+              @for (tag of tags(); track tag) {
+                <div class="badge badge-outline gap-2 py-3 px-3">
+                  #{{ tag }}
+                  <button type="button" (click)="removeTag(tag)">✕</button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <a routerLink="/home" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+            {{ submitting() ? 'Publishing...' : 'Publish meme' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
