@@ -32,6 +32,25 @@ export class CreateMeme {
     caption: ['', [Validators.required, Validators.maxLength(300)]]
   });
 
+  get tagHelperError(): string | null {
+    const value = this.tagInput.trim();
+
+    if (!value) return null;
+
+    if (/\s/.test(value)) {
+      return 'Insert one tag at a time, not multiple tags separated by spaces.';
+    }
+
+    const normalized = value.toLowerCase().replace(/^#/, '');
+    const tagRegex = /^[a-z0-9_-]{1,20}$/;
+
+    if (!tagRegex.test(normalized)) {
+      return 'Tags can contain only lowercase letters, numbers, "_" and "-". Max 20 chars.';
+    }
+
+    return null;
+  }
+
   onFileSelected(event: Event){
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] ?? null;
@@ -78,7 +97,7 @@ export class CreateMeme {
 
     if (!normalized) return;
 
-    const tagRegex = /^[a-z0-9_-]{1,20}$/;
+    const tagRegex = /^[a-z0-9](?:[a-z0-9_-]{0,18}[a-z0-9])?$/;
 
     if (!tagRegex.test(normalized)) {
       this.toastr.error(

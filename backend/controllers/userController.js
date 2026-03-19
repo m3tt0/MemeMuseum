@@ -12,7 +12,6 @@ export class userController {
         return User.findByPk(userId, {attributes: {exclude: excludeFields}});
     }
 
-    
     static async deleteUser(userId, userPwd) {
         const deleteUser = await User.findByPk(userId);
         const ok = await bcrypt.compare(userPwd, deleteUser.password);
@@ -29,7 +28,6 @@ export class userController {
         return { message: "Account deleted successfully" };
     }
 
-    
     static async updateUsername(userId, newUsername) {
 
         const exists = await User.findOne({ where: { userName: newUsername } });
@@ -44,7 +42,6 @@ export class userController {
         });
     }
 
-    
     static async updatePassword(userId, oldPwd, newPwd) {
         const user = await User.findByPk(userId);
                 
@@ -60,8 +57,7 @@ export class userController {
             .then( () => {resolve(user)}) 
         });
     }
-
-    
+ 
     static async updateProfilePicture(userId, filePath) {
         const user = await this.getUserById(userId);
         const oldPicture = user.profilePicture;

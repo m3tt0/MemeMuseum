@@ -6,7 +6,6 @@ import { resolveTags , validateTagContent } from "../utils/tagUtils.js"
 import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export class memeController{
-    //Gestione delle richieste su /memes
 
     static async newMeme(memeBody, memePath, userId){
         return database.transaction(async (t) => {
@@ -50,8 +49,6 @@ export class memeController{
         return Meme.findByPk(memeId);    
     }
 
-
-
   static async searchMemes(filters) {
     const {
       tag,
@@ -72,9 +69,9 @@ export class memeController{
     const include = [];
 
     /*
-    * =========================
-    * FILTRI SUL DATA E CAPTION
-    * =========================
+      =========================
+      FILTRI SUL DATA E CAPTION
+      =========================
     */
 
     if (text !== undefined) {
@@ -106,9 +103,9 @@ export class memeController{
     }
 
     /*
-    * =========================
-    * INCLUDE USER
-    * =========================
+      =========================
+            INCLUDE USER
+      =========================
     */
 
     if (username !== undefined) {
@@ -130,9 +127,9 @@ export class memeController{
     }
 
     /*
-    * =========================
-    * INCLUDE TAGS
-    * =========================
+      =========================
+            INCLUDE TAGS
+      =========================
     */
 
     if (tag !== undefined) {
@@ -155,12 +152,12 @@ export class memeController{
     }
 
     /*
-    * =========================
-    * INCLUDE VOTES E COMMENTS
-    * =========================
-    *
-    * Usiamo separate: true per evitare il casino delle join multiple
-    * che duplicavano righe.
+      =========================
+      INCLUDE VOTES E COMMENTS
+      =========================
+  
+      Usiamo separate: true per evitare il casino delle join multiple
+      che duplicavano righe.
     */
 
     include.push({
@@ -180,9 +177,9 @@ export class memeController{
     });
 
     /*
-    * =========================
-    * ORDINAMENTO
-    * =========================
+      =========================
+            ORDINAMENTO
+      =========================
     */
 
     let order;
@@ -329,7 +326,7 @@ static async getDailyMemes(limit = 5) {
     });
   };
 
-  // 1) meme di oggi
+  // meme di oggi
   let memes = await buildQuery({
     creationDate: {
       [Op.gte]: startOfToday,
@@ -339,7 +336,7 @@ static async getDailyMemes(limit = 5) {
 
   if (memes.length > 0) return memes;
 
-  // 2) fallback: meme recenti degli ultimi 3 giorni
+  // fallback: meme recenti degli ultimi 3 giorni
   memes = await buildQuery({
     creationDate: {
       [Op.gte]: threeDaysAgo,
@@ -349,7 +346,7 @@ static async getDailyMemes(limit = 5) {
 
   if (memes.length > 0) return memes;
 
-  // 3) fallback finale: top meme in generale
+  // fallback finale: top meme in generale
   return buildQuery();
 }
 

@@ -5,8 +5,6 @@ import Jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 export class authController{
-    //Gestione delle richieste su /auth e controllo delle credenziali
-
     static async login (userBody){
         const {usr, pwd} = userBody;
         let found = await User.findOne({
@@ -75,17 +73,5 @@ export class authController{
         const user = await User.findByPk(userId);
         return user && user.userId === loggedUserId;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

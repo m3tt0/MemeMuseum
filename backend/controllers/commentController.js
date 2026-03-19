@@ -2,7 +2,6 @@ import { Comment, User, Meme} from "../models/MemeMuseumDB.js";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export class commentController {
-    //Gestione delle richieste su /comments
 
     static async newComment(commentBody, userId, memeId){
         return Comment.create({
@@ -38,7 +37,6 @@ export class commentController {
     static async getCommentById(commentId){
         return Comment.findByPk(commentId);    
     }
-
 
     static async getCommentsByMeme(memeId, page = 1, pageSize = 10) {
         const meme = await Meme.findByPk(memeId);

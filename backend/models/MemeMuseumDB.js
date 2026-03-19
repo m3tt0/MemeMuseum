@@ -7,7 +7,6 @@ import { createModel as createVoteModel } from "./Vote.js";
 
 import 'dotenv/config';
 
-//creando connessione al database tramite .env
 export const database = new Sequelize( 
     {
         storage: process.env.DB_CONNECTION_URI,

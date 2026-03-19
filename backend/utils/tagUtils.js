@@ -3,7 +3,7 @@ import { httpErrorHandler } from "./httpUtils.js";
 
 export function validateTagContent(content) {
     const normalized = content.trim().toLowerCase();
-    const TAG_REGEX = /^[a-z0-9_-]{1,20}$/;
+    const TAG_REGEX = /^[a-z0-9](?:[a-z0-9_-]{0,18}[a-z0-9])?$/;
 
     if (!TAG_REGEX.test(normalized)) {
         throw httpErrorHandler(400, "Invalid tag format. Allowed: a-z 0-9 _ - (1 to 20 chars)");

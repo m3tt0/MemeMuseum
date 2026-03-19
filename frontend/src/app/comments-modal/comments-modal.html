@@ -51,11 +51,13 @@
 
                   @if (canManageComment(comment)) {
                     <div class="flex items-center gap-2 shrink-0">
-                      @if (!isEditingComment(comment.commentId)) {
-                        <button type="button" class="btn btn-ghost btn-xs material-icons" (click)="startEditComment(comment)" >
+                      @if (!isEditingComment(comment.commentId) && canEditComment(comment)) {
+                        <button type="button" class="btn btn-ghost btn-xs material-icons" (click)="startEditComment(comment)">
                           edit
                         </button>
-                        <button type="button" class="btn btn-ghost btn-xs text-error material-icons" [disabled]="isDeletingThisComment(comment.commentId)" (click)="handleDeleteComment(comment.commentId)" >
+                      }
+                      @if (!isEditingComment(comment.commentId)) {
+                        <button type="button" class="btn btn-ghost btn-xs text-error material-icons" [disabled]="isDeletingThisComment(comment.commentId)" (click)="handleDeleteComment(comment.commentId)">
                           delete
                         </button>
                       }

@@ -142,6 +142,11 @@ export class CommentsModal implements OnInit {
   }
 
   startEditComment(comment: Comment){
+    if (!this.canEditComment(comment)) {
+      this.toastr.warning('You can edit a comment only within 10 minutes of posting it.', 'Edit not allowed');
+      return;
+    }
+
     this.editingCommentId.set(comment.commentId);
     this.editedCommentContent = comment.content;
   }
@@ -152,6 +157,13 @@ export class CommentsModal implements OnInit {
   }
 
   handleUpdateComment(commentId: number){
+    const comment = this.comments().find(c => c.commentId === commentId);
+
+    if (!comment || !this.canEditComment(comment)) {
+      this.toastr.warning('You can no longer edit this comment.', 'Edit not allowed');
+      return;
+    }
+
     const normalizedContent = this.editedCommentContent.trim();
 
     if (!normalizedContent) {
@@ -230,6 +242,19 @@ export class CommentsModal implements OnInit {
     }
 
     return comment.userId === currentUserId;
+  }
+
+  canEditComment(comment: Comment): boolean {
+    const currentUserId = this.authService.getUserId();
+
+    if (!currentUserId || comment.userId !== currentUserId) {
+      return false;
+    }
+
+    const timeLimit = 10 * 60 * 1000; // 10 minuti
+    const creationTime = new Date(comment.creationDate).getTime();
+
+    return Date.now() - creationTime <= timeLimit;
   }
 
   onCommentsScroll(event: Event){

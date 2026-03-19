@@ -46,7 +46,7 @@ export class Signup {
         .signup({ usr: usr, pwd: pwd })
         .subscribe({
             error: (err) => {
-                this.toastr.error("The username you selected was already taken", "Oops! Could not create a new user");
+                this.toastr.error(err.error.description, "Oops! Could not create a new user");
             },
             complete: () => {
                 this.toastr.success(`You can now login with your new account`,`Congrats ${usr}!`);

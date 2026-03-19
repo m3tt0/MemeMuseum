@@ -3,8 +3,7 @@ import { Sequelize } from "sequelize";
 import { httpErrorHandler } from "../utils/httpUtils.js";
 
 export class voteController {
-    //Gestione delle richieste su /votes
-
+    
     static async newVote(voteBody, userId, memeId){
         const existingVote = await Vote.findOne({
             where: {

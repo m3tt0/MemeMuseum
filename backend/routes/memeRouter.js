@@ -7,8 +7,6 @@ import { enforceAuthentication } from "../middleware/authMiddleware.js";
 
 export const memeRouter = new express.Router();
 
-
-//creazione di un nuovo meme
 memeRouter.post("/memes", enforceAuthentication, uploadMeme.single("image"), (req, res, next) => {
     const filePath = req.file ? req.file.path : null;
 
@@ -21,7 +19,7 @@ memeRouter.post("/memes", enforceAuthentication, uploadMeme.single("image"), (re
     });
 });
 
-//eliminazione di un meme esistente
+
 memeRouter.delete("/memes/:memeId", enforceAuthentication, ensureMemeExists, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
     memeController.deleteMeme(req.params.memeId)
     .then( result => {
@@ -32,7 +30,6 @@ memeRouter.delete("/memes/:memeId", enforceAuthentication, ensureMemeExists, ens
     });
 });
 
-//aggiornamento della caption di un meme, eventualmente anche dei tag
 memeRouter.put("/memes/:memeId", enforceAuthentication, ensureMemeExists, ensureUsersModifyOnlyOwnMemes, (req, res, next) => {
     memeController.updateMeme(req.params.memeId, req.body)
     .then( result => {
@@ -42,7 +39,6 @@ memeRouter.put("/memes/:memeId", enforceAuthentication, ensureMemeExists, ensure
         next(err);
     });
 });
-
 
 memeRouter.get("/memes/search", (req, res, next) => {
     memeController.searchMemes(req.query)
