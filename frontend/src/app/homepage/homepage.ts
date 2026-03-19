@@ -96,8 +96,6 @@ export class Homepage implements OnInit {
     this.hasMore.set(true);
     this.loading.set(true);
 
-    console.log(params);
-
     this.restService.getMemes({
       tag: params['tag'],
       //text: params['text'],

@@ -197,4 +197,30 @@ constructor() {
     localStorage.removeItem('userId');
     localStorage.removeItem('profilePicture');
   }
+
+  syncAuthStateWithStorage(): void {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+  const userId = this.getUserIdFromStorage();
+  const profilePicture = localStorage.getItem('profilePicture');
+
+  if (!token || !this.verifyToken(token)) {
+    this.authState.set({
+      user: null,
+      userId: null,
+      profilePicture: null,
+      token: null,
+      isAuthenticated: false,
+    });
+    return;
+  }
+
+  this.authState.set({
+    user,
+    userId,
+    profilePicture,
+    token,
+    isAuthenticated: true,
+  });
+}
 }

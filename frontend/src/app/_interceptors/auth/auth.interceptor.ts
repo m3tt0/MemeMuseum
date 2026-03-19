@@ -5,6 +5,7 @@ import { AuthService } from "../../_services/auth/auth.service";
 
 export function authInterceptor(request: HttpRequest<unknown>, next: HttpHandlerFn) {
   const authService = inject(AuthService);
+  authService.syncAuthStateWithStorage();
   const token = authService.getToken();
 
   if (token) {
