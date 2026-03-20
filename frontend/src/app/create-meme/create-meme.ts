@@ -61,11 +61,11 @@ export class CreateMeme {
       return;
     }
 
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
     const maxSizeInBytes = 15 * 1024 * 1024; // 15 MB
 
     if (!allowedTypes.includes(file.type)) {
-      this.toastr.error('Only PNG, JPG, JPEG and WEBP images are allowed.', 'Invalid file');
+      this.toastr.error('Only PNG, JPG, JPEG, GIF and WEBP images are allowed.', 'Invalid file');
       input.value = '';
       this.selectedFile = null;
       this.imagePreviewUrl.set(null);

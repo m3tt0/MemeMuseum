@@ -23,7 +23,7 @@ export class UpdatePfpModal {
   previewUrl = signal<string | null>(null);
   uploading = signal(false);
 
-  readonly allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+  readonly allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'];
   readonly maxSizeInBytes = 15 * 1024 * 1024; // 15MB
 
   handleClose(){
@@ -42,7 +42,7 @@ export class UpdatePfpModal {
 
     if (!this.allowedTypes.includes(file.type)) {
       this.toastr.error(
-        'Only PNG, JPG, JPEG and WEBP images are allowed.',
+        'Only PNG, JPG, JPEG, GIF and WEBP images are allowed.',
         'Invalid file'
       );
       input.value = '';
