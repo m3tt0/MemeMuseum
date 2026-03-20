@@ -1,3 +1,4 @@
+# MemeMuseum 🎭
 For the project of Tech Web cours at University of Naples Federico II. MemeMuseum is a modern and secure SPA based on RESTfull architecture style.
 MemeMuseum is a full-stack web application that allows users to browse, share, and interact with memes.  
 Users can register, upload memes, vote, comment, and manage their profile.  
