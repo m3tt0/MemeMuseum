@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+<div data-testid="update-username-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
   <div class="w-full max-w-md rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden" (click)="$event.stopPropagation()" >
     <div class="flex items-center justify-between border-b border-base-300 px-5 py-4">
       <div>
@@ -25,7 +25,7 @@
         <label class="label">
           <span class="label-text">New username</span>
         </label>
-        <input type="text" formControlName="newUsername" class="input input-bordered w-full" placeholder="Enter new username" autocomplete="username" />
+        <input data-testid="update-username-input" type="text" formControlName="newUsername" class="input input-bordered w-full" placeholder="Enter new username" autocomplete="username" />
         @if (newUsernameControl.touched && newUsernameControl.errors?.['required']) {
           <p class="text-red-400 text-sm mt-2">Username is required.</p>
         }
@@ -40,7 +40,7 @@
         <button type="button" class="btn btn-ghost" [disabled]="submitting()" (click)="handleClose()" >
           Cancel
         </button>
-        <button type="submit" class="btn btn-primary" [disabled]="submitting()" >
+        <button data-testid="update-username-submit" type="submit" class="btn btn-primary" [disabled]="submitting()" >
           {{ submitting() ? 'Saving...' : 'Update username' }}
         </button>
       </div>

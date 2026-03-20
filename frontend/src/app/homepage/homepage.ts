@@ -82,7 +82,7 @@ export class Homepage implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Somethin went wrong during loading Meme Feed:', err);
+        console.error('Something went wrong during loading Meme Feed:', err);
         this.hasMore.set(false);
       }
     });

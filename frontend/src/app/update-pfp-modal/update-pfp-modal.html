@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+<div data-testid="update-pfp-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
   <div class="w-full max-w-md rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden"(click)="$event.stopPropagation()">
     <div class="flex items-center justify-between border-b border-base-300 px-5 py-4">
       <div>
@@ -17,7 +17,7 @@
         <label class="label">
           <span class="label-text">Choose image</span>
         </label>
-        <input type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)"/>
+        <input data-testid="pfp-input" type="file" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)"/>
       </div>
 
       @if (previewUrl()) {
@@ -44,7 +44,7 @@
       <button type="button" class="btn btn-ghost" [disabled]="uploading()" (click)="handleClose()">
         Cancel
       </button>
-      <button type="button" class="btn btn-primary" [disabled]="uploading()" (click)="handleSubmit()">
+      <button data-testid="pfp-submit" type="button" class="btn btn-primary" [disabled]="uploading()" (click)="handleSubmit()">
         {{ uploading() ? 'Uploading...' : 'Save' }}
       </button>
     </div>

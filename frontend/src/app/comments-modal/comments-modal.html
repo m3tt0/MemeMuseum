@@ -1,6 +1,6 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
-  <div class="w-full max-w-2xl max-h-[85vh] rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
-    <div class="flex items-center justify-between border-b border-base-300 px-5 py-4">
+<div data-testid="comments-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+  <div class="w-full max-w-2xl max-h-[85vh] rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden flex flex-col" (click)="$event.stopPropagation()">
+    <div class="flex items-center justify-between border-b border-base-300 px-5 py-4 shrink-0">
       <div>
         <h3 class="text-xl font-bold">Comments</h3>
         <p class="text-sm text-base-content">
@@ -13,7 +13,7 @@
       </button>
     </div>
 
-    <div class="max-h-[55vh] overflow-y-auto px-5 py-4" (scroll)="onCommentsScroll($event)">
+    <div class="flex-1 overflow-y-auto min-h-0 px-5 py-4"  (scroll)="onCommentsScroll($event)">
       @if (loading()) {
         <div class="flex justify-center py-10">
           <button class="btn" disabled>Loading comments...</button>
@@ -98,10 +98,10 @@
           <label class="label pb-2">
             <span class="label-text">Add a comment</span>
           </label>
-          <textarea [(ngModel)]="newComment" rows="3" class="textarea textarea-bordered w-full" placeholder="Write your comment..."></textarea>
+          <textarea data-testid="comment-input" [(ngModel)]="newComment" rows="3" class="textarea textarea-bordered w-full" placeholder="Write your comment..."></textarea>
         </div>
 
-        <button type="button" class="btn btn-primary" [disabled]="submitting()" (click)="handleCreateComment()">
+        <button data-testid="comment-submit" type="button" class="btn btn-primary" [disabled]="submitting()" (click)="handleCreateComment()">
           {{ submitting() ? 'Posting...' : 'Post' }}
         </button>
       </div>

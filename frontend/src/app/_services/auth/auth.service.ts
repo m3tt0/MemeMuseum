@@ -198,7 +198,7 @@ constructor() {
     localStorage.removeItem('profilePicture');
   }
 
-  syncAuthStateWithStorage(): void {
+  syncAuthStateWithStorage(){
   const token = localStorage.getItem('token');
   const user = localStorage.getItem('user');
   const userId = this.getUserIdFromStorage();

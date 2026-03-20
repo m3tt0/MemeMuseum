@@ -1,4 +1,4 @@
-<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
+<div data-testid="update-password-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" (click)="handleClose()">
   <div class="w-full max-w-md rounded-2xl bg-base-100 border border-base-300 shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
     <div class="flex items-center justify-between border-b border-base-300 px-5 py-4">
       <div>
@@ -17,7 +17,7 @@
           <span class="label-text">Current password</span>
         </label>
         <div class="relative">
-          <input [type]="showOldPassword() ? 'text' : 'password'" formControlName="oldPassword" class="input input-bordered w-full pr-16" placeholder="Enter current password" autocomplete="current-password" />
+          <input data-testid="old-password-input" [type]="showOldPassword() ? 'text' : 'password'" formControlName="oldPassword" class="input input-bordered w-full pr-16" placeholder="Enter current password" autocomplete="current-password" />
           <button type="button" class="btn btn-ghost btn-sm absolute right-2 top-1/2 -translate-y-1/2 material-icons" (click)="toggleOldPassword()" >
             {{ showOldPassword() ? 'visibility_off' : 'visibility' }}
           </button>
@@ -34,7 +34,7 @@
           <span class="label-text">New password</span>
         </label>
         <div class="relative">
-          <input [type]="showNewPassword() ? 'text' : 'password'" formControlName="newPassword" class="input input-bordered w-full pr-16" placeholder="Enter new password" autocomplete="new-password" />
+          <input data-testid="new-password-input" [type]="showNewPassword() ? 'text' : 'password'" formControlName="newPassword" class="input input-bordered w-full pr-16" placeholder="Enter new password" autocomplete="new-password" />
           <button type="button" class="btn btn-ghost btn-sm absolute right-2 top-1/2 -translate-y-1/2 material-icons" (click)="toggleNewPassword()" >
             {{ showNewPassword() ? 'visibility_off' : 'visibility' }}
           </button>
@@ -50,7 +50,7 @@
         <button type="button" class="btn btn-ghost" [disabled]="submitting()" (click)="handleClose()" >
           Cancel
         </button>
-        <button type="submit" class="btn btn-primary" [disabled]="submitting()" >
+        <button data-testid="update-password-submit" type="submit" class="btn btn-primary" [disabled]="submitting()" >
           {{ submitting() ? 'Saving...' : 'Update password' }}
         </button>
       </div>

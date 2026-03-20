@@ -8,6 +8,7 @@ import { UpdatePfpModal } from "../update-pfp-modal/update-pfp-modal";
 import { UpdatePwdModal } from '../update-pwd-modal/update-pwd-modal';
 import { UpdateUsernameModal } from '../update-username-modal/update-username-modal';
 import { DeleteUserModal } from '../delete-user-modal/delete-user-modal';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-navbar',
@@ -20,6 +21,7 @@ export class Navbar{
   restService = inject(RestBackendService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
+  private toastr = inject(ToastrService);
 
   backendBaseUrl = 'http://localhost:3030/';
   
@@ -75,6 +77,7 @@ export class Navbar{
 
   handleLogoutClick(){
     this.authService.logout();
+    this.toastr.info('You have been redirected to the login page', 'Successfully logged out');
   }
 
   openUpdatePfpModal(){

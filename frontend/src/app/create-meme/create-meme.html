@@ -13,7 +13,7 @@
           <label class="label">
             <span class="label-text">Meme image</span>
           </label>
-          <input type="file" accept="image/*" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
+          <input data-testid="meme-file-input" type="file" accept="image/*" class="file-input file-input-bordered w-full" (change)="onFileSelected($event)" />
         </div>
 
         @if (imagePreviewUrl()) {
@@ -27,7 +27,7 @@
             <span class="label-text">Caption</span>
           </label>
 
-          <textarea formControlName="caption" rows="4" class="textarea textarea-bordered w-full" placeholder="Write a caption for your meme..." ></textarea>
+          <textarea data-testid="meme-caption-input" formControlName="caption" rows="4" class="textarea textarea-bordered w-full" placeholder="Write a caption for your meme..." ></textarea>
 
           @if (createMemeForm.controls.caption.touched && createMemeForm.controls.caption.errors?.['required']) {
             <p class="text-red-400 text-sm mt-2">Caption is required.</p>
@@ -44,8 +44,8 @@
           </label>
 
           <div class="flex gap-2">
-            <input [value]="tagInput" (input)="tagInput = $any($event.target).value" (keydown)="handleTagKeydown($event)" class="input input-bordered w-full" placeholder="Add a tag and press Enter" />
-            <button type="button" class="btn btn-outline" (click)="addTag()">
+            <input data-testid="meme-tag-input" [value]="tagInput" (input)="tagInput = $any($event.target).value" (keydown)="handleTagKeydown($event)" class="input input-bordered w-full" placeholder="Add a tag and press Enter" />
+            <button data-testid="meme-tag-add" type="button" class="btn btn-outline" (click)="addTag()">
               Add
             </button>
           </div>
@@ -58,7 +58,7 @@
               @for (tag of tags(); track tag) {
                 <div class="badge badge-outline gap-2 py-3 px-3">
                   #{{ tag }}
-                  <button type="button" (click)="removeTag(tag)">✕</button>
+                  <button type="button" class="material-icons" (click)="removeTag(tag)">close</button>
                 </div>
               }
             </div>
@@ -66,7 +66,7 @@
         </div>
         <div class="flex justify-end gap-3 pt-2">
           <a routerLink="/home" class="btn btn-ghost">Cancel</a>
-          <button type="submit" class="btn btn-primary" [disabled]="submitting()">
+          <button data-testid="meme-submit" type="submit" class="btn btn-primary" [disabled]="submitting()">
             {{ submitting() ? 'Publishing...' : 'Publish meme' }}
           </button>
         </div>
