@@ -1,7 +1,7 @@
 import { Component, Input, inject, signal, OnInit, EventEmitter, Output } from '@angular/core';
 import { NgOptimizedImage, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RestBackendService, Meme } from '../_services/backend/rest-backend.service';
+import { RestBackendService, Meme, Vote } from '../_services/backend/rest-backend.service';
 import { AuthService } from '../_services/auth/auth.service';
 import { UpdateMemeModal } from '../update-meme-modal/update-meme-modal';
 import { DeleteMemeModal } from '../delete-meme-modal/delete-meme-modal';
@@ -173,7 +173,7 @@ export class MemeCard implements OnInit {
     });
   }
 
-  private replaceOrInsertUserVote(vote: any){
+  private replaceOrInsertUserVote(vote: Vote){
     const userId = this.authService.getUserId();
     const votes = this.meme.Votes ?? [];
     const index = votes.findIndex(v => v.userId === userId);

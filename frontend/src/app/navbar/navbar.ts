@@ -3,7 +3,6 @@ import { Router, RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../_services/auth/auth.service';
-import { RestBackendService } from '../_services/backend/rest-backend.service';
 import { UpdatePfpModal } from "../update-pfp-modal/update-pfp-modal";
 import { UpdatePwdModal } from '../update-pwd-modal/update-pwd-modal';
 import { UpdateUsernameModal } from '../update-username-modal/update-username-modal';
@@ -18,7 +17,6 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class Navbar{  
   authService = inject(AuthService);
-  restService = inject(RestBackendService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private toastr = inject(ToastrService);

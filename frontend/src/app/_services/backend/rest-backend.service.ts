@@ -81,7 +81,7 @@ export class RestBackendService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3030/api';
 
-    httpOptions = {
+  private readonly httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
     })

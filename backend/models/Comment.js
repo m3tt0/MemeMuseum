@@ -30,7 +30,6 @@ export function createModel(database) {
     {
       indexes: [
         {
-          unique: true,
           fields: ["memeId", "creationDate"],
         }
       ],

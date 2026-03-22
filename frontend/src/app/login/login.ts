@@ -48,10 +48,9 @@ export class Login {
         .login({ usr: usr, pwd: pwd })
         .subscribe({
           next: (res) => {
-            this.authService.updateToken(res.token).then(() => {
-              this.toastr.success(`Welcome ${usr}!`);
-              this.router.navigateByUrl('/home');
-            });
+            this.authService.updateToken(res.token);
+            this.toastr.success(`Welcome ${usr}!`);
+            this.router.navigateByUrl('/home');
           },
           error: (err) => {
             this.toastr.error('Invalid username or password, try again !');

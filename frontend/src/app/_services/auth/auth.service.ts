@@ -21,10 +21,10 @@ export interface AuthState {
 export class AuthService {
 
   authState: WritableSignal<AuthState> = signal<AuthState>({
-    user: this.getUserFromStorage(),
-    userId: this.getUserIdFromStorage(),
-    profilePicture: this.getUserPfpFromStorage(),
-    token: this.getTokenFromStorage(),
+    user: null,
+    userId: null,
+    profilePicture: null,
+    token: null,
     isAuthenticated: false,
   });
 
@@ -69,7 +69,7 @@ constructor() {
 }
 
 
-  async updateToken(token: string) {
+  updateToken(token: string) {
     const decoded = this.safeDecode(token);
     const username = decoded?.userName ?? null;
     const userId = decoded?.sub ?? null;
@@ -180,6 +180,7 @@ constructor() {
       });
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      localStorage.removeItem('userId');
       localStorage.removeItem('profilePicture');
     }
   }

@@ -45,13 +45,17 @@ export class Signup {
         this.restService
         .signup({ usr: usr, pwd: pwd })
         .subscribe({
-            error: (err) => {
-                this.toastr.error(err.error.description, "Oops! Could not create a new user");
-            },
-            complete: () => {
-                this.toastr.success(`You can now login with your new account`,`Congrats ${usr}!`);
+            next: () => {
+                this.toastr.success(`You can now login with your new account`, `Congrats ${usr}!`);
                 this.router.navigateByUrl("/auth/login");
-            }
+            },
+            error: (err) => {
+                const message =
+                  err?.error?.description ||
+                  err?.error?.error ||
+                  'Could not create a new user.';
+                this.toastr.error(message, "Oops!");
+            },
         });
     }
   }

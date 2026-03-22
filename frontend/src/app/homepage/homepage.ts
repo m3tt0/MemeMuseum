@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RestBackendService, Meme } from '../_services/backend/rest-backend.service';
 import { Navbar } from '../navbar/navbar';
@@ -16,6 +17,7 @@ export class Homepage implements OnInit {
   private restService = inject(RestBackendService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   memes = signal<Meme[]>([]);
   dailyMemes = signal<Meme[]>([]);
@@ -37,7 +39,7 @@ export class Homepage implements OnInit {
   limit = 10;
 
   ngOnInit(){
-    this.route.queryParams.subscribe({
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: params => {
         if (Object.keys(params).length === 0) {
           if (this.viewMode() === 'feed' && this.memes().length > 0) return;

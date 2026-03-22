@@ -148,25 +148,23 @@ export class CreateMeme {
 
     this.submitting.set(true);
 
-    this.restService.createMeme(payload).subscribe({
-      next: () => {
-        this.toastr.success('Your meme has been published!', 'Success');
-        this.router.navigate(['/home']);
-      },
-      error: (err) => {
-        console.error(err);
+    this.restService.createMeme(payload)
+      .pipe(finalize(() => this.submitting.set(false)))
+      .subscribe({
+        next: () => {
+          this.toastr.success('Your meme has been published!', 'Success');
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          console.error(err);
 
-        const backendMessage =
-          err?.error?.description ||
-          err?.error?.error ||
-          'Something went wrong while uploading the meme.';
+          const backendMessage =
+            err?.error?.description ||
+            err?.error?.error ||
+            'Something went wrong while uploading the meme.';
 
-        this.toastr.error(backendMessage, 'Upload failed');
-        this.submitting.set(false);
-      },
-      complete: () => {
-        this.submitting.set(false);
-      }
-    });
+          this.toastr.error(backendMessage, 'Upload failed');
+        },
+      });
   }
 }

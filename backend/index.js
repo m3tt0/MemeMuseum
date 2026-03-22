@@ -58,7 +58,7 @@ app.use("/api", userRouter);
 app.use((err, req, res, next) => {
   console.log(err.stack);
   if (err.code === 'LIMIT_FILE_SIZE') {
-    return res.status(400).json({ error: err.message });
+    return res.status(400).json({ code: 400, description: err.message});
   }
   res.status(err.status || 500).json({
     code: err.status || 500,
