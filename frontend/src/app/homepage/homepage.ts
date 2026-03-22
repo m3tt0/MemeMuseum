@@ -39,13 +39,13 @@ export class Homepage implements OnInit {
   ngOnInit(){
     this.route.queryParams.subscribe({
       next: params => {
-
         if (Object.keys(params).length === 0) {
+          if (this.viewMode() === 'feed' && this.memes().length > 0) return;
+          
           this.viewMode.set('feed');
           this.loadMemes();
           return;
         }
-
         this.viewMode.set('search');
         this.loadSearchMeme(params);
       }
@@ -89,7 +89,7 @@ export class Homepage implements OnInit {
   }
 
   loadSearchMeme(params: Params){
-    if (this.loading() || !this.hasMore()) return;
+    if (this.loading()) return;
 
     this.searchMemes.set([]);
     this.page.set(1);
@@ -133,6 +133,7 @@ export class Homepage implements OnInit {
         next: (memes) => {
           this.dailyMemes.set(memes);
           this.viewMode.set('daily');
+          this.closeDailyMeme();
         },
         error: (err) => {
           console.error('Something went wrong during loading Daily Meme', err);
@@ -145,8 +146,8 @@ export class Homepage implements OnInit {
   }
 
   backToFeed(){
-    this.router.navigateByUrl('/home');
     this.viewMode.set('feed');
+    this.router.navigateByUrl('/home');
   }
 
   handleMemeDeleted(memeId: number){
