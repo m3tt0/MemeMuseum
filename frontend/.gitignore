@@ -22,6 +22,7 @@ yarn-error.log
 
 # Visual Studio Code
 .claude/*
+**/.claude/*
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

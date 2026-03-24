@@ -14,11 +14,11 @@ export class DeleteMemeModal {
   @Output() close = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<void>();
 
-  handleClose(): void {
+  handleClose(){
     this.close.emit();
   }
 
-  handleConfirm(): void {
+  handleConfirm(){
     this.confirm.emit();
   }
 }

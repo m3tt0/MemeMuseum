@@ -42,7 +42,7 @@ export class CreateMeme {
     }
 
     const normalized = value.toLowerCase().replace(/^#/, '');
-    const tagRegex = /^[a-z0-9_-]{1,20}$/;
+    const tagRegex = /^[a-z0-9](?:[a-z0-9_-]{0,18}[a-z0-9])?$/;
 
     if (!tagRegex.test(normalized)) {
       return 'Tags can contain only lowercase letters, numbers, "_" and "-". Max 20 chars.';
@@ -66,7 +66,7 @@ export class CreateMeme {
 
     if (!allowedTypes.includes(file.type)) {
       this.toastr.error('Only PNG, JPG, JPEG, GIF and WEBP images are allowed.', 'Invalid file');
-      input.value = '';
+      input.value = ''; //resetta input file del browser, altrimenti la change detection non si triggera
       this.selectedFile = null;
       this.imagePreviewUrl.set(null);
       return;
@@ -74,7 +74,7 @@ export class CreateMeme {
 
     if (file.size > maxSizeInBytes) {
       this.toastr.error('The image is too large. Maximum size is 15 MB.', 'File too large');
-      input.value = '';
+      input.value = ''; //resetta input file del browser, altrimenti la change detection non si triggera
       this.selectedFile = null;
       this.imagePreviewUrl.set(null);
       return;
@@ -123,7 +123,7 @@ export class CreateMeme {
 
   handleTagKeydown(event: KeyboardEvent){
     if (event.key === 'Enter' || event.key === ',') {
-      event.preventDefault();
+      event.preventDefault(); //evita submit del form su Enter
       this.addTag();
     }
   }
